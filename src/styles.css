@@ -336,7 +336,7 @@ main {
   align-items: center;
   gap: 16px;
 }
-.stat-icon {
+.stat-icon.material-symbols-rounded {
   display: grid;
   place-items: center;
   width: 45px;
