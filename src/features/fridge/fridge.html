@@ -1,0 +1,73 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">DEIN VORRAT. ALLES IM BLICK.</span>
+    <h1>Mein Kühlschrank</h1>
+    <p>Gut aufbewahrt. Rechtzeitig verbraucht. Lecker kombiniert.</p>
+  </div>
+  <button class="btn" id="add">
+    <span class="material-symbols-rounded" aria-hidden="true">add</span>
+    Lebensmittel hinzufügen
+  </button>
+</div>
+<div id="notice"></div>
+<section class="hero">
+  <div>
+    <span class="eyebrow">DEIN VORRAT KANN MEHR</span>
+    <h2>Was ist drin?<br />Was wird draus?</h2>
+    <p>Entdecke Rezeptideen mit den Zutaten, die du schon zu Hause hast.</p>
+    <a href="#kitchen" class="btn light"
+      >Rezepte entdecken
+      <span class="material-symbols-rounded" aria-hidden="true"
+        >arrow_forward</span
+      ></a
+    >
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <span class="material-symbols-rounded">restaurant</span>
+  </div>
+</section>
+<section class="stats" aria-label="Vorratsübersicht">
+  <div class="stat">
+    <span class="stat-icon material-symbols-rounded" aria-hidden="true"
+      >kitchen</span
+    >
+    <div><strong id="total">0</strong><small>Im Kühlschrank</small></div>
+  </div>
+  <div class="stat">
+    <span class="stat-icon material-symbols-rounded" aria-hidden="true"
+      >schedule</span
+    >
+    <div><strong id="soon">0</strong><small>Bald verbrauchen</small></div>
+  </div>
+  <div class="stat">
+    <span class="stat-icon material-symbols-rounded" aria-hidden="true"
+      >menu_book</span
+    >
+    <div>
+      <strong id="recipes-count">0</strong><small>Gespeicherte Rezepte</small>
+    </div>
+  </div>
+</section>
+<div class="section-title">
+  <h2>Deine Lebensmittel</h2>
+  <small>Frische beginnt mit Überblick.</small>
+</div>
+<div class="toolbar">
+  <label class="search"
+    ><span class="material-symbols-rounded" aria-hidden="true">search</span
+    ><input
+      id="search"
+      aria-label="Vorrat durchsuchen"
+      placeholder="Was suchst du?"
+  /></label>
+  <div class="filters" aria-label="Vorratsfilter">
+    <button class="chip active" data-filter="all">Alle</button
+    ><button class="chip" data-filter="soon">Bald fällig</button
+    ><button class="chip" data-filter="expired">Abgelaufen</button>
+  </div>
+</div>
+<div id="stock" class="grid"></div>
+<p class="help">
+  „Bald fällig“ bedeutet heute bis in 3 Tagen. Ein Mindesthaltbarkeitsdatum ist
+  kein Verbrauchsdatum. Die KI verwendet vorsorglich keine abgelaufenen Chargen.
+</p>

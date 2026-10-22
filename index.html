@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f7f8fa" />
+    <meta
+      name="description"
+      content="Dein Vorrat. Deine Rezepte. Weniger verschwenden, bewusster kochen."
+    />
+    <title>Fridgely · Deine Küche, weitergedacht</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./src/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0&display=block"
+    />
+  </head>
+  <body>
+    <a class="skip" href="#main">Zum Inhalt</a>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#fridge"
+          ><span class="brand-icon material-symbols-rounded" aria-hidden="true"
+            >kitchen</span
+          >fridgely<span class="brand-dot">.</span></a
+        >
+        <p class="nav-label">DEINE KÜCHE</p>
+        <nav id="navigation" aria-label="Hauptnavigation"></nav>
+        <div class="sidebar-bottom">
+          <div class="small-kicker">WENIGER VERSCHWENDEN.</div>
+          <p>Mehr aus deinem<br />Vorrat machen.</p>
+          <a href="#settings" class="text-link"
+            >Einstellungen
+            <span class="material-symbols-rounded" aria-hidden="true"
+              >arrow_forward</span
+            ></a
+          >
+        </div>
+      </aside>
+      <div class="workspace">
+        <header class="topbar">
+          <span class="top-caption">Ein guter Tag beginnt in deiner Küche.</span
+          ><a class="brand mobile-brand" href="#fridge">fridgely.</a
+          ><a id="account-link" class="account-pill" href="#auth"
+            ><span class="material-symbols-rounded" aria-hidden="true"
+              >person</span
+            ><span id="account-label">Anmelden</span></a
+          >
+        </header>
+        <main id="main" tabindex="-1"></main>
+        <footer>Mit Vorrat kochen. Mit gutem Gefühl genießen.</footer>
+      </div>
+    </div>
+    <div id="toast" role="status" aria-live="polite" hidden></div>
+    <dialog id="modal"><div id="modal-body"></div></dialog>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

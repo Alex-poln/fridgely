@@ -1,0 +1,67 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">AUS DEINEM VORRAT WIRD ETWAS GUTES</span>
+    <h1>Deine KI-Küche</h1>
+    <p>Weniger Grübeln. Mehr Lieblingsgerichte.</p>
+  </div>
+</div>
+<div id="notice"></div>
+<div class="two-col">
+  <section class="card">
+    <div class="tabs">
+      <button class="chip active" data-mode="suggest">
+        Inspiration aus dem Vorrat</button
+      ><button class="chip" data-mode="wish">Ich möchte etwas kochen</button>
+    </div>
+    <form id="recipe-form" class="stack">
+      <label id="wish-label" hidden
+        >Was möchtest du kochen?<input
+          name="wish"
+          maxlength="300"
+          placeholder="Welches Gericht schwebt dir vor?" /></label
+      ><label
+        >Für wie viele Personen?<input
+          name="servings"
+          type="number"
+          min="1"
+          max="12"
+          step="1"
+          value="2"
+          required /></label
+      ><label class="check"
+        ><input type="checkbox" name="consent" required /><span
+          >Vorrat und gespeicherte Ernährungswünsche für diese Anfrage an die KI
+          senden.</span
+        ></label
+      ><button class="btn" type="submit">
+        <span class="material-symbols-rounded" aria-hidden="true"
+          >auto_awesome</span
+        >
+        Rezeptideen finden
+      </button>
+      <p class="help">
+        Die KI erstellt bis zu 3 Ideen. Bei einem Wunschgericht zeigt die App,
+        welche Mengen fehlen. Generierte Rezepte bleiben gespeichert.
+      </p>
+    </form>
+  </section>
+  <aside class="goal-banner">
+    <span class="material-symbols-rounded" aria-hidden="true">eco</span>
+    <h2>Erst verbrauchen,<br />dann neu kaufen.</h2>
+    <p>
+      Die KI priorisiert Lebensmittel, die bald fällig sind. Abgelaufene Chargen
+      werden ausgeschlossen.
+    </p>
+    <a class="text-link" href="#goals"
+      >Meine Ernährungsziele
+      <span class="material-symbols-rounded" aria-hidden="true"
+        >arrow_forward</span
+      ></a
+    >
+  </aside>
+</div>
+<div class="section-title">
+  <h2>Deine Rezeptsammlung</h2>
+  <small id="recipe-count"></small>
+</div>
+<div id="recipes" class="stack" style="margin-top: 20px"></div>

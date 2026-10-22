@@ -1,0 +1,4 @@
+project_id = "fridgely"
+[functions.kitchen-ai]
+# JWT wird innerhalb der Funktion mit auth.getUser geprüft, auch für neue Signing Keys.
+verify_jwt = false
