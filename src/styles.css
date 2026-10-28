@@ -175,7 +175,7 @@ nav a:hover {
   font-weight: 600;
   font-size: 20px;
   line-height: 1.4;
-  margin: 12px 0 20px;
+  margin: 12px 0 0;
 }
 .text-link {
   display: inline-flex;
@@ -389,9 +389,9 @@ main {
   color: var(--muted);
 }
 .chip.active {
-  background: var(--ink);
+  background: var(--green);
   color: white;
-  border-color: var(--ink);
+  border-color: var(--green);
 }
 .section-title {
   display: flex;
@@ -982,7 +982,83 @@ dialog h2 {
     transform: translateY(-1px);
   }
 }
-/* Bonprüfung: bestehendes Formularraster bleibt auch mobil nutzbar. */
-.receipt-row { min-width: 0; margin: 18px 0; padding: 16px; border: 1px solid #d6ddd7; border-radius: 12px; }
-.receipt-toggle { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-.receipt-toggle input { width: 22px; height: 22px; flex: 0 0 auto; }
+/* Consistent controls and comfortable touch targets. */
+.chip { min-height: 44px; font-weight: 600; }
+.btn.secondary { color: var(--green); }
+input[type="checkbox"] { accent-color: var(--green); }
+.page-heading > .actions { margin-top: 0; flex-shrink: 0; }
+.tabs { padding: 5px; border-radius: 22px; background: #f2f5f3; gap: 5px; }
+.tabs .chip { border-color: transparent; background: transparent; border-radius: 17px; line-height: 1.4; padding: 12px 16px; }
+.tabs .chip.active { background: var(--green); color: white; }
+button.text-link { border: 0; background: transparent; color: var(--green); padding: 10px 0; min-height: 44px; }
+input[type="file"]::file-selector-button { font: inherit; border: 0; border-radius: 20px; padding: 10px 14px; margin-right: 12px; background: var(--green); color: white; cursor: pointer; }
+@media (min-width: 721px) {
+  .sidebar { height: 100dvh; padding-bottom: 24px; overflow-y: auto; }
+  .sidebar-bottom { flex-shrink: 0; }
+}
+.receipt-modal { width: min(560px, calc(100vw - 32px)); padding: 32px; color: var(--ink); overscroll-behavior: contain; }
+.ui-icon { width: 22px; height: 22px; flex-shrink: 0; vertical-align: middle; }
+.receipt-camera > .ui-icon { width: 32px; height: 32px; }
+.receipt-expand > .ui-icon { width: 19px; height: 19px; color: #89968e; transition: transform 0.2s; }
+.receipt-expand[aria-expanded="true"] > .ui-icon { transform: rotate(180deg); }
+.receipt-modal .close-modal { width: 44px; height: 44px; }
+.receipt-heading { margin-bottom: 26px; padding-right: 24px; }
+.receipt-heading .eyebrow { font-size: 9px; letter-spacing: 1.4px; margin-bottom: 12px; }
+.receipt-heading h2 { font-size: 27px; margin-bottom: 8px; }
+.receipt-heading p { font-size: 14px; color: var(--muted); margin-bottom: 0; }
+.receipt-pickers { display: grid; gap: 12px; }
+.receipt-camera.btn { border-radius: 20px; padding: 25px 20px; gap: 16px; justify-content: flex-start; text-align: left; font-size: 17px; }
+.receipt-camera.btn > .material-symbols-rounded { font-size: 32px; }
+.receipt-camera small { display: block; font-size: 12px; color: #d5e2dc; font-weight: 400; margin-top: 7px; }
+.receipt-pickers > .secondary { min-height: 52px; }
+.receipt-privacy { text-align: center; margin: 18px 0 0; font-size: 11px !important; }
+#receipt-preview img { display: block; width: 100%; height: 210px; object-fit: contain; border-radius: 16px; background: #f4f6f3; }
+#receipt-preview .actions { justify-content: space-between; }
+.receipt-status { font-size: 13px; padding: 14px 16px; border-radius: 12px; background: #f2f5f3; margin: 16px 0; line-height: 1.5; }
+#receipt-progress { text-align: center; padding: 38px 10px; }
+.receipt-spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid #dce6e1; border-top-color: var(--green); border-radius: 50%; margin-bottom: 20px; animation: receipt-spin 1s linear infinite; }
+@keyframes receipt-spin { to { transform: rotate(360deg); } }
+.receipt-list { display: grid; gap: 10px; }
+.receipt-product { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: #fff; }
+.receipt-product.is-selected { border-color: #ccdbd4; }
+.receipt-product-top { display: flex; align-items: center; padding-right: 16px; gap: 10px; }
+.receipt-expand { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; border: 0; background: transparent; padding: 17px 4px 17px 18px; text-align: left; color: var(--ink); }
+.receipt-product-copy { display: grid; gap: 4px; flex: 1; min-width: 0; }
+.receipt-product-name { font-size: 15px; font-weight: 650; overflow-wrap: anywhere; }
+.receipt-amount { font-size: 12px; color: var(--muted); }
+.receipt-uncertain { color: #946323; font-size: 11px; font-weight: 500; }
+.receipt-expand > .material-symbols-rounded { color: #89968e; font-size: 19px; transition: transform 0.2s; }
+.receipt-expand[aria-expanded="true"] > .material-symbols-rounded { transform: rotate(180deg); }
+.receipt-edit { border-top: 1px solid var(--line); padding: 18px; background: #f8faf8; }
+.receipt-edit .help { margin-bottom: 0; }
+.receipt-switch { width: 48px; height: 44px; position: relative; display: grid; align-items: center; flex-shrink: 0; cursor: pointer; }
+.receipt-switch input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
+.receipt-switch > span { display: block; width: 44px; height: 26px; border-radius: 20px; background: #dbe1dd; position: relative; transition: background 0.2s; }
+.receipt-switch > span::after { content: ""; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; border-radius: 50%; background: white; box-shadow: 0 1px 3px #0002; transition: transform 0.2s; }
+.receipt-switch input:checked + span { background: var(--green); }
+.receipt-switch input:checked + span::after { transform: translateX(18px); }
+.receipt-switch input:focus-visible + span { outline: 3px solid #748e43; outline-offset: 3px; }
+.receipt-switch input:disabled + span { opacity: 0.45; }
+.receipt-review-footer { position: sticky; bottom: -32px; background: white; padding: 12px 0 16px; margin-top: 16px; border-top: 1px solid var(--line); display: grid; text-align: center; z-index: 2; }
+.receipt-review-footer .help { margin: 0 0 10px; font-size: 11px !important; }
+.receipt-review-footer .btn { width: 100%; min-height: 50px; }
+.receipt-reset { justify-self: center; font-size: 12px; }
+@media (max-width: 720px) {
+  input, select, textarea { font-size: 16px; }
+  .page-heading > .actions { width: 100%; gap: 10px; }
+  .page-heading > .actions .btn { flex: 1 1 100%; min-height: 48px; }
+  .filters { display: flex; flex-wrap: nowrap; }
+  .filters .chip { flex: 1; padding: 10px 8px; }
+  .receipt-modal { padding: 24px 20px; max-height: calc(100dvh - 24px - env(safe-area-inset-top)); width: calc(100vw - 20px); }
+  .receipt-modal .close-modal { top: 15px; right: 14px; }
+  .receipt-heading { padding-right: 24px; margin-bottom: 22px; }
+  .receipt-heading h2 { font-size: 24px; }
+  .receipt-heading .eyebrow { font-size: 8px; letter-spacing: 1px; }
+  .receipt-heading p { font-size: 13px; }
+  .receipt-review-footer { bottom: -24px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+  .receipt-edit { padding: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .receipt-spinner { animation: none; }
+  .receipt-expand > .material-symbols-rounded, .receipt-switch > span, .receipt-switch > span::after { transition: none; }
+}
