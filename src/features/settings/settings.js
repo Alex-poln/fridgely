@@ -1,6 +1,7 @@
 import { configured, db, user } from "../../core/supabase.js";
 import { esc, icon, busy, toast } from "../../core/ui.js";
 export async function mount(root) {
+  root.querySelector("#restart-tour").onclick = () => window.dispatchEvent(new Event("nussi-tour"));
   const u = await user();
   root.querySelector("#status").innerHTML =
     `<p>${icon(configured ? "link" : "link_off")} ${configured ? "Supabase-Zugangsdaten eingetragen" : "Supabase noch nicht eingerichtet"}</p><p class="help">${configured ? "Der tatsächliche Zugriff wird beim Laden und Speichern geprüft." : "Trage URL und öffentlichen Key in config.js ein. Die Einrichtung ist in README.md beschrieben."}</p>`;

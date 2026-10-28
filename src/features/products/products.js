@@ -8,6 +8,7 @@ import {
   ai,
 } from "../../core/data.js";
 import { configured, requireUser } from "../../core/supabase.js";
+import { thinking } from "../../core/nussi.js";
 import {
   esc,
   icon,
@@ -40,10 +41,13 @@ export async function productEditor(product = {}, after = () => {}) {
       el.querySelector("#estimate").onclick = (e) =>
         busy(e.currentTarget, async () => {
           if (!f.elements.namedItem("name").reportValidity()) return;
+          const loading = document.createElement("div");
+          el.querySelector("#estimate").after(loading);
+          const stop = thinking(loading, "Ich schätze die Nährwerte für dein Lebensmittel …");
           const r = await ai("nutrition", {
             name: f.elements.namedItem("name").value,
             unit: f.unit.value,
-          });
+          }).finally(() => { stop(); loading.remove(); });
           for (const k of ["kcal", "protein", "carbs", "fat"])
             f.elements[k].value = r[k] ?? "";
           f.nutrition_source.value = "ai";

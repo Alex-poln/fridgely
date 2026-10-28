@@ -13,6 +13,7 @@
     />
     <title>Fridgely · Deine Küche, weitergedacht</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./src/assets/brand/icon-180.png" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="stylesheet" href="./src/styles.css" />
     <link
@@ -20,18 +21,15 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0&display=block"
     />
   </head>
-  <body>
+  <body data-auth="checking">
     <a class="skip" href="#main">Zum Inhalt</a>
     <div class="app-shell">
       <aside class="sidebar">
-        <a class="brand" href="#fridge"
-          ><span class="brand-icon material-symbols-rounded" aria-hidden="true"
-            >kitchen</span
-          >fridgely<span class="brand-dot">.</span></a
-        >
+        <a class="brand" href="#fridge" aria-label="Fridgely – Kühlschrank"><img class="brand-logo" src="./src/assets/brand/fridgely-logo.svg" alt="Fridgely" width="190" height="42"></a>
         <p class="nav-label">DEINE KÜCHE</p>
         <nav id="navigation" aria-label="Hauptnavigation"></nav>
         <div class="sidebar-bottom">
+          <button id="nussi-guide" type="button" aria-label="Nussi erklärt dir die App"></button>
           <div class="small-kicker">WENIGER VERSCHWENDEN.</div>
           <p>Mehr aus deinem<br />Vorrat machen.</p>
         </div>
@@ -39,7 +37,7 @@
       <div class="workspace">
         <header class="topbar">
           <span class="top-caption">Ein guter Tag beginnt in deiner Küche.</span
-          ><a class="brand mobile-brand" href="#fridge">fridgely.</a
+          ><a class="brand mobile-brand" href="#fridge"><img class="brand-logo" src="./src/assets/brand/fridgely-logo.svg" alt="Fridgely" width="150" height="33"></a
           ><a id="account-link" class="account-pill" href="#auth"
             ><span class="material-symbols-rounded" aria-hidden="true"
               >person</span

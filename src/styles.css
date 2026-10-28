@@ -269,6 +269,8 @@ main {
 }
 .btn .material-symbols-rounded {
   font-size: 20px;
+  width: 20px;
+  overflow: hidden;
 }
 .hero {
   border-radius: var(--radius);
@@ -1062,3 +1064,126 @@ input[type="file"]::file-selector-button { font: inherit; border: 0; border-radi
   .receipt-spinner { animation: none; }
   .receipt-expand > .material-symbols-rounded, .receipt-switch > span, .receipt-switch > span::after { transition: none; }
 }
+
+/* Nussi: one companion across sign-in, guidance and AI work. */
+:root { --nussi: #244e45; --nussi-soft: #f2f6ed; }
+.nussi { display: flex; align-items: center; gap: 16px; color: var(--ink); text-align: left; }
+.nussi-character { width: 118px; flex: 0 0 118px; }
+.nussi-art { display: block; width: 100%; height: auto; overflow: visible; }
+.nussi-art [data-part="pupils"] { transition: transform .1s ease-out; }
+.nussi-art .paw { transform-box: fill-box; transform-origin: center; transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+.nussi-covering [data-part="paw-left"] { transform: translate(31px,-82px) rotate(10deg) scale(1.08); }
+.nussi-covering [data-part="paw-right"] { transform: translate(-31px,-82px) rotate(-10deg) scale(1.08); }
+.nussi-covering [data-part="pupils"] { transform: translate(0,3px) !important; }
+.nussi-bubble { position: relative; background: var(--nussi-soft); border: 1px solid #dce6d6; padding: 15px 18px; border-radius: 18px; min-width: 0; }
+.nussi-bubble::before { content: ""; position: absolute; left: -7px; top: 45%; width: 12px; height: 12px; transform: rotate(45deg); background: inherit; border-left: 1px solid #dce6d6; border-bottom: 1px solid #dce6d6; }
+.nussi-bubble > strong { display: block; color: var(--nussi); font-size: 11px; letter-spacing: .5px; margin-bottom: 5px; }
+.nussi-words { display: block; font-size: 14px; line-height: 1.55; }
+.nussi-thinking .nussi-character { animation: nussi-breathe 2.4s ease-in-out infinite; }
+.nussi-thinking [data-part="pupils"] { animation: nussi-look 3s ease-in-out infinite; }
+.nussi-dots { display: flex; gap: 5px; margin-top: 12px; }
+.nussi-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--nussi); animation: nussi-dot 1.2s ease-in-out infinite; }
+.nussi-dots i:nth-child(2) { animation-delay: .16s; }.nussi-dots i:nth-child(3) { animation-delay: .32s; }
+@keyframes nussi-breathe { 50% { transform: translateY(-4px) rotate(-2deg); } }
+@keyframes nussi-look { 50% { transform: translate(3px,-2px); } }
+@keyframes nussi-dot { 50% { opacity: .3; transform: translateY(-3px); } }
+.nussi-loading, .nussi-welcome { margin: 0 0 24px; max-width: 650px; }
+.nussi-loading { padding: 20px; border-radius: 22px; background: #f8faf5; border: 1px solid #dce6d6; }
+#receipt-progress { padding: 24px 0; }
+#nussi-guide { background: transparent; border: 0; padding: 0; width: 100%; text-align: left; margin-bottom: 22px; }
+#nussi-guide .nussi { display: block; }
+#nussi-guide .nussi-character { width: 78px; margin: 0 auto -4px; }
+#nussi-guide .nussi-bubble { padding: 10px 12px; border-radius: 13px; }
+#nussi-guide .nussi-bubble::before { display: none; }
+#nussi-guide .nussi-words { font-size: 11px; }
+#nussi-guide .nussi-bubble > strong { font-size: 10px; }
+
+/* No app chrome or private content before authentication. */
+body:not([data-auth="signed-in"]) .sidebar,
+body:not([data-auth="signed-in"]) .topbar,
+body:not([data-auth="signed-in"]) .workspace > footer { display: none; }
+body:not([data-auth="signed-in"]) .workspace { width: 100%; margin: 0; }
+body:not([data-auth="signed-in"]) main { max-width: none; min-height: 100dvh; padding: 0; }
+body:not([data-auth="signed-in"]) { background: #f7f8f3; }
+.session-loading { color: var(--green); text-align: center; padding: 40vh 20px 0; }
+.brand-logo { display: block; width: 100%; height: auto; max-width: 190px; }
+.mobile-brand .brand-logo { width: 145px; }
+.login-layout { max-width: 1240px; margin: auto; padding: 48px 36px; min-height: 100dvh; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,450px); align-items: center; gap: 64px; }
+.login-intro { background: #eaf0e3; border: 1px solid #dfe7d8; border-radius: 32px; padding: 42px; align-self: stretch; display: flex; flex-direction: column; justify-content: center; min-height: 650px; }
+.login-brand { display: inline-block; align-self: flex-start; margin-bottom: 60px; }
+.login-brand img { display: block; width: 210px; height: auto; }
+.login-intro .eyebrow { color: #526c50; font-size: 9px; letter-spacing: 1.5px; }
+.login-intro h1 { color: var(--green); font-size: clamp(40px,4.3vw,60px); line-height: 1.08; letter-spacing: -2.4px; }
+.login-intro p { color: #5f7264; max-width: 330px; margin: 24px 0 0; font-size: 15px; }
+.login-benefits { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.login-benefits span { font-size: 11px; color: var(--green); background: #f7faf2; border: 1px solid #d8e2ce; padding: 9px 12px; border-radius: 24px; }
+.login-intro-footer { display: flex; gap: 9px; align-items: center; margin-top: 58px; color: #60775b; font-size: 11px; }
+.login-leaf { width: 13px; height: 18px; background: #8ca876; border-radius: 13px 0 13px 0; transform: rotate(18deg); }
+.nussi-login-card { background: white; border: 1px solid var(--line); border-radius: 28px; padding-top: 24px; margin-top: 0; box-shadow: 0 16px 50px #244e4508; }
+.nussi-login-card > .nussi { margin: 0 28px 0; align-items: center; gap: 12px; }
+.nussi-login-card > .nussi .nussi-character { width: 125px; flex-basis: 125px; }
+.nussi-login-card > .nussi .nussi-bubble { margin-bottom: 0; padding: 13px; }
+.nussi-login-card > .nussi .nussi-words { font-size: 12px; }
+.login-card-content { padding: 22px 30px 24px; }
+.login-card-content h2 { margin: 0; font-size: 26px; }
+.login-card-content .tabs { margin-bottom: 25px; }
+.login-card-content form { margin-top: 22px; }
+.login-card-content input { font-size: 16px; background: #fafbf8; }
+.login-password { position: relative; display: flex; align-items: center; }
+.login-password input { padding-right: 92px; }
+.login-password button { position: absolute; right: 6px; border: 0; background: transparent; color: var(--nussi); padding: 10px; min-height: 44px; font-size: 11px; font-weight: 650; }
+.login-card-content > #reset { font-size: 12px; margin-top: 8px; }
+.login-note { text-align: center; font-size: 11px !important; margin-bottom: 0; }
+.login-feedback { font-size: 13px; line-height: 1.5; background: #f2f6ed; padding: 12px 14px; border-radius: 12px; margin: 0; }
+
+/* Native modal focus handling, highlighted navigation and a responsive coach card. */
+.nussi-tour { position: fixed; inset: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; padding: 0; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; overflow: hidden; --green: var(--nussi); }
+.nussi-tour::backdrop { background: #10221dbb; backdrop-filter: grayscale(1); }
+.tour-highlight { position: fixed; display: flex; gap: 13px; align-items: center; padding: 15px 16px; border-radius: 13px; background: white; color: #244e45; font-size: 14px; font-weight: 600; box-shadow: 0 0 0 5px #ffffff35; pointer-events: none; }
+.tour-panel { position: fixed; padding: 24px; border-radius: 24px; background: white; box-shadow: 0 20px 80px #0003; overflow-y: auto; }
+.tour-panel h2 { padding-right: 0; font-size: 23px; }
+.tour-panel .eyebrow { font-size: 9px; color: var(--nussi); }
+.tour-panel .nussi { align-items: flex-start; gap: 10px; }
+.tour-panel .nussi-character { width: 85px; flex-basis: 85px; }
+.tour-panel .nussi-bubble { padding: 12px; }
+.tour-panel .nussi-words { font-size: 13px; }
+.tour-actions { display: flex; align-items: center; gap: 8px; margin-top: 22px; }
+.tour-actions .text-link { margin-right: auto; font-size: 11px; }
+.tour-actions .btn { padding: 11px 16px; font-size: 12px; }
+@media (max-height: 780px) and (min-width: 721px) { #nussi-guide { margin-bottom: 12px; } #nussi-guide .nussi-character { width: 55px; } #nussi-guide .nussi-bubble { display: none; } }
+@media (min-width: 721px) and (max-width: 1000px) { .login-layout { gap: 24px; grid-template-columns: minmax(0,1fr) minmax(0,390px); padding: 32px 24px; } .login-intro { padding: 28px; } .login-intro h1 { font-size: 38px; letter-spacing: -1.8px; } .login-brand img { width: 180px; } }
+@media (max-width: 720px) {
+  .login-layout { display: block; padding: 24px 16px max(24px,env(safe-area-inset-bottom)); max-width: 490px; }
+  .login-intro { display: block; min-height: 0; padding: 0 6px; background: transparent; border: 0; }
+  .login-brand { margin: 0 0 22px; }
+  .login-brand img { width: 165px; }
+  .login-intro h1 { font-size: 28px; letter-spacing: -1px; line-height: 1.15; margin-bottom: 20px; }
+  .login-intro .eyebrow, .login-intro p, .login-benefits, .login-intro-footer, .login-desktop-break { display: none; }
+  .nussi-login-card { margin-top: 0; border-radius: 24px; padding-top: 18px; }
+  .nussi-login-card > .nussi { margin: 0 16px; gap: 10px; }
+  .nussi-login-card > .nussi .nussi-character { width: 92px; flex-basis: 92px; }
+  .nussi-login-card > .nussi .nussi-bubble { padding: 10px; }
+  .nussi-login-card > .nussi .nussi-words { font-size: 11px; }
+  .login-card-content { padding: 20px; }
+  .login-card-content h2 { font-size: 23px; }
+  .nussi-character { width: 86px; flex-basis: 86px; }
+  .nussi { gap: 12px; }
+  .nussi-words { font-size: 13px; }
+  .nussi-loading { padding: 14px; }
+  .tour-highlight { flex-direction: column; gap: 5px; padding: 9px 2px; font-size: 9px; border-radius: 11px; }
+  #navigation a { flex: 1 1 0; }
+  .tour-panel { padding: 18px; }
+  .tour-panel .nussi-character { width: 70px; flex-basis: 70px; }
+  .tour-panel .nussi-words { font-size: 12px; }
+  .tour-actions { gap: 6px; }
+  .tour-actions .btn { padding: 10px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nussi *, .nussi *::before, .nussi *::after { animation: none !important; transition: none !important; }
+}
+@media (max-width: 720px) {
+  html { overflow-x: clip; }
+  .sidebar { width: 100vw; }
+}
+/* Keep icon-font fallbacks inside their tiles while fonts are loading. */
+.stat-icon.material-symbols-rounded { overflow: hidden; }

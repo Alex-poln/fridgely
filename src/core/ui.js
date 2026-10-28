@@ -9,6 +9,10 @@ export const esc = (value) =>
   );
 // Essential dialog icons work immediately, even before external fonts load.
 const localIcons = {
+  kitchen: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M5 9h14M8 5v1M8 12v4"/>',
+  inventory_2: '<path d="M4 7h16v14H4Z"/><rect x="3" y="3" width="18" height="4" rx="1"/><path d="M10 11h4"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  tune: '<path d="M3 6h5m4 0h9M3 12h11m4 0h3M3 18h3m4 0h11M8 3v6m6 0v6M6 15v6"/>',
   close: '<path d="m6 6 12 12M18 6 6 18"/>',
   expand_more: '<path d="m6 9 6 6 6-6"/>',
   photo_camera: '<path d="M9 4 7 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2-3Z"/><circle cx="12" cy="13" r="4"/>',

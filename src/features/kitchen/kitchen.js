@@ -12,7 +12,10 @@ import {
   setupNotice,
 } from "../../core/ui.js";
 import { missingIngredients } from "../../core/domain.js";
+import { nussi, thinking } from "../../core/nussi.js";
 export async function mount(root) {
+  root.querySelector("#kitchen-nussi").innerHTML = nussi("Was kochen wir heute? Ich helfe dir, aus deinem Vorrat etwas Leckeres zu machen.");
+  let stopThinking;
   root.querySelector("#notice").innerHTML = setupNotice(configured);
   const f = root.querySelector("form");
   let mode = "suggest",
@@ -36,12 +39,24 @@ export async function mount(root) {
   f.onsubmit = (e) => {
     e.preventDefault();
     busy(f.querySelector("[type=submit]"), async () => {
-      await ai(mode, {
-        wish: f.wish.value.trim(),
-        servings: Number(f.servings.value),
-      });
-      toast("Deine Rezeptideen sind bereit.");
-      await reload();
+      const submit = f.querySelector('[type="submit"]'), previous = submit.innerHTML;
+      const payload = { wish: f.wish.value.trim(), servings: Number(f.servings.value) };
+      const message = root.querySelector("#kitchen-error"); message.hidden = true;
+      root.querySelector("#kitchen-nussi").hidden = true;
+      stopThinking = thinking(root.querySelector("#kitchen-thinking"), mode === "wish" ? "Ich tüftle an deinem Wunschgericht …" : "Ich überlege, was zu deinem Vorrat passt …");
+      root.querySelector("#kitchen-thinking").scrollIntoView({ block: "nearest" });
+      root.querySelectorAll("form input,[data-mode]").forEach(control => control.disabled = true);
+      submit.textContent = "Nussi denkt nach …";
+      try {
+        await ai(mode, payload);
+        await reload(); toast("Nussi hat deine Rezeptideen fertig.");
+      } catch (error) { message.textContent = error.message; message.hidden = false; }
+      finally {
+        stopThinking?.(); stopThinking = null;
+        root.querySelector("#kitchen-nussi").hidden = false;
+        root.querySelectorAll("form input,[data-mode]").forEach(control => control.disabled = false);
+        submit.innerHTML = previous;
+      }
     });
   };
   async function reload() {
@@ -100,4 +115,5 @@ export async function mount(root) {
     );
   }
   await reload();
+  return () => stopThinking?.();
 }

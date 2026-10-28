@@ -1,72 +1,69 @@
-// Nur Login, Registrierung, Passwort-Reset und Logout.
-import { configured, db, user } from "../../core/supabase.js";
-import { esc, icon, toast, busy, setupNotice } from "../../core/ui.js";
-export async function mount(root) {
+import { configured, db } from "../../core/supabase.js";
+import { esc, busy, setupNotice } from "../../core/ui.js";
+import { nussi, bindNussiPassword } from "../../core/nussi.js";
+export async function mount(root, currentUser) {
   const box = root.querySelector("#auth-content");
-  const u = await user();
-  if (u) {
-    box.innerHTML = `<section class="card auth-card account-details"><h2>Dein Konto</h2><p>${esc(u.email)}</p><p>Dein Vorrat ist persönlich und nur für dich sichtbar.</p><button class="btn" id="logout">${icon("logout")} Abmelden</button></section>`;
-    box.querySelector("#logout").onclick = (e) =>
-      busy(e.currentTarget, async () => {
-        const { error } = await (await db()).auth.signOut();
-        if (error) throw error;
-        window.dispatchEvent(new Event("auth-changed"));
-      });
+  if (currentUser) {
+    box.innerHTML = `<section class="card auth-card account-details">${nussi("Schön, dass du da bist. Dein Vorrat wartet auf dich!")}<h1>Dein Konto</h1><p>${esc(currentUser.email)}</p><div class="actions"><a class="btn" href="#fridge">Zum Kühlschrank</a><button class="btn secondary" id="logout">Abmelden</button></div></section>`;
+    box.querySelector("#logout").onclick = e => busy(e.currentTarget, async () => {
+      const { error } = await (await db()).auth.signOut();
+      if (error) throw error;
+      window.dispatchEvent(new Event("auth-changed"));
+    });
     return;
   }
-  box.innerHTML =
-    setupNotice(configured) +
-    `<section class="card auth-card"><div class="tabs"><button class="chip active" data-mode="login">Anmelden</button><button class="chip" data-mode="signup">Registrieren</button></div><form><label>E-Mail<input name="email" type="email" autocomplete="email" required maxlength="254"></label><label>Passwort<input name="password" type="password" autocomplete="current-password" minlength="8" required maxlength="128"></label><button class="btn" type="submit">Anmelden ${icon("arrow_forward")}</button></form><button class="btn secondary small" id="reset" style="margin-top:18px">Passwort vergessen?</button><p class="help">Für ein neues Konto mindestens 8 Zeichen verwenden. Je nach Supabase-Einstellung erhältst du eine Bestätigungs-E-Mail.</p></section>`;
-  let mode = "login";
-  const form = box.querySelector("form");
-  box.querySelectorAll("[data-mode]").forEach(
-    (b) =>
-      (b.onclick = () => {
-        mode = b.dataset.mode;
-        box
-          .querySelectorAll("[data-mode]")
-          .forEach((t) => t.classList.toggle("active", t === b));
-        form.password.autocomplete =
-          mode === "login" ? "current-password" : "new-password";
-        form.querySelector("[type=submit]").textContent =
-          mode === "login" ? "Anmelden" : "Konto erstellen";
-      }),
-  );
-  form.onsubmit = (e) => {
-    e.preventDefault();
-    busy(form.querySelector("[type=submit]"), async () => {
+  box.innerHTML = `<div class="login-layout"><section class="login-intro"><a class="login-brand" href="#auth" aria-label="Fridgely"><img src="./src/assets/brand/fridgely-logo.svg" alt="Fridgely" width="240" height="53"></a><span class="eyebrow">GUT FÜR DEINEN VORRAT. GUT FÜR DICH.</span><h1>Mehr Frische.<br>Weniger<br class="login-desktop-break"> verschwenden.</h1><p>Dein Einkauf, gut aufgehoben. Deine nächste Kochidee, schon in Reichweite.</p><div class="login-benefits"><span>Vorrat im Blick</span><span>Mit Nussi kochen</span></div><div class="login-intro-footer"><span class="login-leaf" aria-hidden="true"></span>Eine kleine Küche voller Möglichkeiten.</div></section>
+    <section class="nussi-login-card">${nussi("Hallo! Melde dich an und lass uns deine Küche entdecken.")}<div class="login-card-content">${setupNotice(configured)}
+    <div class="tabs" aria-label="Konto-Zugang"><button type="button" class="chip active" aria-pressed="true" data-mode="login">Anmelden</button><button type="button" class="chip" aria-pressed="false" data-mode="signup">Registrieren</button></div>
+    <h2 id="login-title">Willkommen zurück</h2><p class="help" id="login-copy">Dein persönlicher Vorrat wartet auf dich.</p>
+    <form class="stack"><label>E-Mail-Adresse<input name="email" type="email" autocomplete="email" placeholder="du@beispiel.de" required maxlength="254"></label>
+    <label>Passwort<span class="login-password"><input name="password" type="password" autocomplete="current-password" required maxlength="128"><button id="show-password" type="button" aria-pressed="false">Anzeigen</button></span></label>
+    <p class="login-feedback" role="status" aria-live="polite" hidden></p><button class="btn" type="submit">Anmelden</button></form>
+    <button class="text-link" id="reset" type="button">Passwort vergessen?</button><p class="help login-note">Deine Küche ist nur nach der Anmeldung zugänglich.</p></div></section></div>`;
+  let mode = "login", working = false;
+  const form = box.querySelector("form"), feedback = box.querySelector(".login-feedback");
+  const submit = form.querySelector('[type="submit"]');
+  bindNussiPassword(box, form.password, box.querySelector("#show-password"));
+  function message(text) { feedback.textContent = text; feedback.hidden = !text; }
+  function lock(value) {
+    working = value;
+    box.querySelectorAll("button,input").forEach(control => control.disabled = value);
+    submit.textContent = value ? "Einen Moment …" : mode === "login" ? "Anmelden" : "Konto erstellen";
+    form.setAttribute("aria-busy", String(value));
+  }
+  box.querySelectorAll("[data-mode]").forEach(button => button.onclick = () => {
+    mode = button.dataset.mode; message("");
+    box.querySelectorAll("[data-mode]").forEach(tab => { tab.classList.toggle("active", tab === button); tab.setAttribute("aria-pressed", String(tab === button)); });
+    form.password.autocomplete = mode === "login" ? "current-password" : "new-password";
+    form.password.minLength = mode === "signup" ? 8 : 1;
+    box.querySelector("#login-title").textContent = mode === "signup" ? "Deine Küche beginnt hier" : "Willkommen zurück";
+    box.querySelector("#login-copy").textContent = mode === "signup" ? "Wähle ein Passwort mit mindestens 8 Zeichen." : "Dein persönlicher Vorrat wartet auf dich.";
+    box.querySelector("#reset").hidden = mode === "signup";
+    lock(false);
+  });
+  form.onsubmit = async event => {
+    event.preventDefault(); if (working) return;
+    const credentials = { email: form.email.value.trim(), password: form.password.value };
+    lock(true); message(mode === "signup" ? "Dein Konto wird erstellt …" : "Du wirst angemeldet …");
+    try {
       const auth = (await db()).auth;
-      const credentials = {
-        email: form.email.value.trim(),
-        password: form.password.value,
-      };
-      const { data, error } =
-        mode === "login"
-          ? await auth.signInWithPassword(credentials)
-          : await auth.signUp({
-              ...credentials,
-              options: {
-                emailRedirectTo: location.href.split("#")[0] + "#fridge",
-              },
-            });
+      const { data, error } = mode === "login" ? await auth.signInWithPassword(credentials)
+        : await auth.signUp({ ...credentials, options: { emailRedirectTo: location.href.split("#")[0] + "#fridge" } });
       if (error) throw error;
       if (data.session) {
-        location.hash = "fridge";
-        window.dispatchEvent(new Event("auth-changed"));
-      } else toast("Bitte bestätige deine E-Mail und melde dich danach an.");
-    });
+        location.hash = "fridge"; window.dispatchEvent(new Event("auth-changed"));
+      } else { form.password.value = ""; message("Fast geschafft! Bitte bestätige deine E-Mail und melde dich danach an."); }
+    } catch (error) { message(error.message); }
+    finally { lock(false); }
   };
-  box.querySelector("#reset").onclick = (e) =>
-    busy(e.currentTarget, async () => {
-      if (!form.email.reportValidity()) return;
-      const { error } = await (
-        await db()
-      ).auth.resetPasswordForEmail(form.email.value.trim(), {
-        redirectTo: location.href.split("#")[0] + "#settings",
-      });
+  box.querySelector("#reset").onclick = async () => {
+    if (working || !form.email.reportValidity()) return;
+    const email = form.email.value.trim(); lock(true); message("Ich fordere deinen Link an …");
+    try {
+      const { error } = await (await db()).auth.resetPasswordForEmail(email, { redirectTo: location.href.split("#")[0] + "#settings" });
       if (error) throw error;
-      toast(
-        "Falls ein Konto existiert, erhältst du einen Link zum Zurücksetzen.",
-      );
-    });
+      message("Falls ein Konto existiert, erhältst du eine E-Mail zum Zurücksetzen.");
+    } catch (error) { message(error.message); }
+    finally { lock(false); }
+  };
 }

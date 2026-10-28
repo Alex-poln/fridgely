@@ -1,1 +1,15 @@
-{"name":"Fridgely – deine Küche","short_name":"Fridgely","start_url":"./","scope":"./","display":"standalone","background_color":"#f7f8fa","theme_color":"#244e45","icons":[{"src":"./favicon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]}
+{
+  "name": "Fridgely – deine Küche",
+  "short_name": "Fridgely",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8f3",
+  "theme_color": "#244e45",
+  "icons": [
+    {"src":"./favicon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"},
+    {"src":"./src/assets/brand/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"./src/assets/brand/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"./src/assets/brand/icon-maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+  ]
+}

@@ -1,6 +1,7 @@
 import { ai, rpc } from "../../core/data.js";
 import { esc, icon, fmt, dialog, closeDialog, toast } from "../../core/ui.js";
 import { prepareReceiptImage } from "./receipt-image.js";
+import { thinking } from "../../core/nussi.js";
 
 // Open on tap immediately; authentication is checked when requesting AI.
 export async function receiptImporter(after) {
@@ -22,11 +23,12 @@ export async function receiptImporter(after) {
     const upload = el.querySelector("#receipt-upload"), review = el.querySelector("#receipt-review");
     const preview = el.querySelector("#receipt-preview"), pickers = el.querySelector("#receipt-pickers");
     const status = el.querySelector("#receipt-status"), progress = el.querySelector("#receipt-progress");
-    let prepared, previewUrl, working = false, closed = false;
+    let prepared, previewUrl, working = false, closed = false, stopThinking;
     const onCancel = event => { if (working) event.preventDefault(); };
     el.addEventListener("cancel", onCancel);
     el.addEventListener("close", () => {
       closed = true;
+      stopThinking?.();
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       el.removeEventListener("cancel", onCancel); el.classList.remove("receipt-modal"); el.removeAttribute("aria-labelledby");
     }, { once: true });
@@ -67,7 +69,8 @@ export async function receiptImporter(after) {
     el.querySelector("#receipt-change").onclick = chooseAgain;
     el.querySelector("#receipt-analyze").onclick = async () => {
       if (working || !prepared) return;
-      lock(true); message(); upload.hidden = true; progress.hidden = false;
+      lock(true); message(); upload.hidden = true;
+      stopThinking = thinking(progress, "Ich lese deinen Bon und sortiere deinen Einkauf …");
       try {
         const result = await ai("receipt", { image: prepared.image });
         if (closed) return;
@@ -75,7 +78,7 @@ export async function receiptImporter(after) {
         if (!result.items.length) throw Error(result.note || "Keine Lebensmittel erkannt. Bitte fotografiere den Bon noch einmal näher.");
         renderReview(result, prepared.hash);
       } catch (error) { if (!closed) { upload.hidden = false; message(error.message); } }
-      finally { if (!closed) { progress.hidden = true; lock(false); } }
+      finally { stopThinking?.(); stopThinking = null; if (!closed) { lock(false); } }
     };
     function syncRows() {
       let count = 0;
