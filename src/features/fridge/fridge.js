@@ -13,6 +13,7 @@ import {
 } from "../../core/ui.js";
 import { expiry, positive } from "../../core/domain.js";
 import { productEditor } from "../products/products.js";
+import { receiptImporter } from "./receipt.js";
 export async function mount(root) {
   root.querySelector("#notice").innerHTML = setupNotice(configured);
   let stock = [],
@@ -177,6 +178,8 @@ export async function mount(root) {
   }
   root.querySelector("#add").onclick = () =>
     editor().catch((e) => toast(e.message));
+  root.querySelector("#scan-receipt").onclick = () =>
+    receiptImporter(reload).catch((e) => toast(e.message));
   root.querySelector("#search").oninput = render;
   root.querySelectorAll("[data-filter]").forEach(
     (b) =>
