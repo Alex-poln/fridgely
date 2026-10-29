@@ -31,7 +31,8 @@ export function recipeNutrition(recipe, products) {
   if (!d.ingredients?.length || !(d.servings > 0)) return Object.fromEntries(nutrients.map(k => [k,null]));
   const items = d.ingredients.map(i => {
     const p = products.find(p => (p.id === i.product_id || (!i.product_id && p.name.toLocaleLowerCase("de") === i.name.toLocaleLowerCase("de"))) && p.unit === i.unit);
-    return p ? productNutrition(p, i.quantity) : {};
+    const values=Object.fromEntries(nutrients.map(k=>[k,p?.[k] ?? i.nutrition?.[k] ?? null]));
+    return productNutrition({...values,unit:i.unit},i.quantity);
   });
   return Object.fromEntries(nutrients.map(k => [k, items.some(i => i[k] == null) ? null : items.reduce((sum,i) => sum + i[k],0) / d.servings]));
 }

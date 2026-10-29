@@ -82,8 +82,10 @@ export function validateRecipes(raw, products, servings) {
           product_id: product?.id || null,
           unit: i.unit,
           quantity: i.quantity,
+          ...(i.nutrition == null ? {} : {nutrition: validateNutrition(i.nutrition)}),
         };
       }),
     };
   });
 }
+

@@ -11,9 +11,13 @@ export async function mount(root) {
   root.querySelector("#kitchen-nussi").innerHTML=nussi(profile.display_name ? "Was kochen wir heute, "+profile.display_name+"?" : "Was kochen wir heute?");
   const f=root.querySelector("#recipe-form");
   root.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;root.querySelectorAll("[data-mode]").forEach(x=>x.classList.toggle("active",x===b));root.querySelector("#wish-label").hidden=mode!=="wish";f.wish.required=mode==="wish";});
+  function macroSummary(r) {
+    const values=recipeNutrition(r,products), missing=nutrients.some(k=>values[k]==null);
+    return `<p class="help">Nährwerte pro Portion · ca.</p><div class="recipe-macros">${nutrients.map(k=>`<div><small>${labels[k]}</small><strong>${values[k]==null?"—":fmt(values[k])+" "+(k==="kcal"?"kcal":"g")}</strong></div>`).join("")}</div><p class="help">${missing?"Für dieses Rezept fehlen noch Produktwerte. Neue KI-Vorschläge ergänzen Schätzwerte nach dem Funktionsupdate.":"Aus den angegebenen Zutatenmengen berechnet. Fehlende Produktwerte sind KI-Schätzungen."}</p>`;
+  }
   function details(r) {
     const d=r.content;
-    return `<p>${esc(d.description)}</p><p class="help">${fmt(d.servings)} Portionen · ${fmt(d.minutes)} Min. · KI-Vorschlag</p><details><summary>Zutaten und Zubereitung</summary><ul>${(d.ingredients||[]).map(i=>`<li>${fmt(i.quantity)} ${esc(i.unit)} ${esc(i.name)}</li>`).join("")}</ul><ol>${(d.steps||[]).map(s=>`<li>${esc(s)}</li>`).join("")}</ol><p class="help">${esc(d.note)}</p></details>`;
+    return `<p>${esc(d.description)}</p><p class="help">${fmt(d.servings)} Portionen · ${fmt(d.minutes)} Min. · KI-Vorschlag</p>${macroSummary(r)}<details><summary>Zutaten und Zubereitung</summary><ul>${(d.ingredients||[]).map(i=>`<li>${fmt(i.quantity)} ${esc(i.unit)} ${esc(i.name)}</li>`).join("")}</ul><ol>${(d.steps||[]).map(s=>`<li>${esc(s)}</li>`).join("")}</ol><p class="help">${esc(d.note)}</p></details>`;
   }
   async function reload() {
     [recipes,custom,products]=await Promise.all([list("recipes"),list("custom_meals"),list("products")]);
