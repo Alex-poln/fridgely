@@ -1239,3 +1239,50 @@ body[data-page="fridge"] .product-visual { height:110px; }
  body[data-page="fridge"] .page-heading .actions .btn {white-space:nowrap; font-size:12px;}
  #modal {max-height:calc(100dvh - 28px); overflow:auto; width:calc(100vw - 24px); box-sizing:border-box;}
 }
+
+/* Keep controls inside their grid tracks, including Safari date controls. */
+.form-grid {grid-template-columns:repeat(2,minmax(0,1fr));}
+label, input, select, textarea, .form-grid > *, .tracker-summary > * {min-width:0;box-sizing:border-box;}
+input,select,textarea {max-width:100%;}
+.tracker-date {display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:12px;max-width:640px;margin:24px auto 28px;}
+.tracker-date > .icon-button {width:48px;height:48px;margin:0;justify-self:center;flex-shrink:0;}
+.tracker-day-button {min-height:52px;width:100%;border:1px solid var(--line);border-radius:16px;background:white;color:var(--ink);padding:12px;font:inherit;font-weight:650;}
+.tracker-date #today {grid-column:2;justify-self:center;padding:0 16px;min-height:36px;margin:0;}
+.tracker-summary {gap:16px;}
+.tracker-summary h2 {font-size:clamp(20px,2.1vw,28px);overflow-wrap:anywhere;}
+.tracker-summary .card {min-width:0;}
+.birth-fields {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.5fr);gap:12px;}
+.birth-fields input {width:100%;padding:14px 8px;text-align:center;font-size:18px;}
+#modal.profile-dialog {width:min(520px,calc(100vw - 32px));max-height:calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));padding:28px;box-sizing:border-box;overflow-y:auto;}
+.profile-dialog .nussi {margin:12px 0 24px;}
+.profile-dialog .nussi-character {width:72px;flex-basis:72px;}
+.profile-dialog h2 {font-size:25px;line-height:1.2;margin-bottom:24px;padding-right:0;}
+.wizard-progress {font-size:12px;color:var(--muted);margin:0 40px 20px 0;}
+.wizard-form {display:grid;gap:18px;}
+.wizard-form > label {display:grid;gap:10px;}
+.wizard-form input {font-size:18px;}
+.wizard-choices {display:grid;gap:10px;}
+.wizard-choices label {display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:14px;min-height:52px;}
+.wizard-choices label:has(input:checked) {background:var(--nussi-soft);border-color:var(--green);}
+.wizard-choices input {width:20px;height:20px;margin:0;flex:0 0 20px;}
+.wizard-actions {display:flex;gap:12px;margin-top:20px;}
+.wizard-actions .btn {flex:1;min-width:0;}
+.wizard-targets {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0;}
+.wizard-targets > div {padding:16px;background:var(--nussi-soft);border-radius:14px;}
+.wizard-targets strong {display:block;font-size:22px;margin-top:8px;}
+#wizard-error:empty {display:none;}
+@media(max-width:720px){
+ body[data-page="tracker"] .page-heading {display:block;}
+ body[data-page="tracker"] .page-heading h1 {font-size:28px;line-height:1.15;}
+ body[data-page="tracker"] .page-heading > a {margin-top:12px;}
+ .tracker-date {gap:8px;}
+ .tracker-summary {gap:12px;}
+ .tracker-summary .card {padding:18px 14px;}
+ #modal.profile-dialog {padding:24px 20px;}
+ .profile-dialog h2 {font-size:23px;}
+ .profile-dialog .nussi-words {font-size:13px;}
+ .profile-dialog .nussi-character {width:60px;flex-basis:60px;}
+ .birth-fields {gap:8px;}
+ body {padding-top:env(safe-area-inset-top);}
+}
+

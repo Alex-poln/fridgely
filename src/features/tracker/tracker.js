@@ -1,7 +1,7 @@
 import { db, result } from "../../core/supabase.js";
 import { list, remove } from "../../core/data.js";
 import { esc, fmt, dialog, closeDialog, busy, toast } from "../../core/ui.js";
-import { nutrients, labels, meals, localDate, dailyTotals, recipeNutrition } from "../../core/nutrition.js";
+import { nutrients, labels, meals, localDate, dateFromParts, dailyTotals, recipeNutrition } from "../../core/nutrition.js";
 import { logFood } from "./entry.js";
 export async function mount(root) {
   const day=root.querySelector("#entry-day");day.value=localDate();
@@ -9,6 +9,7 @@ export async function mount(root) {
   root.querySelector("#tracker-greeting").textContent=profile.display_name ? "Dein Überblick, "+profile.display_name+"." : "Dein Essen im Überblick.";
   let entries=[],version=0;
   async function reload() {
+    root.querySelector("#selected-day").textContent=new Intl.DateTimeFormat("de-DE",{weekday:"short",day:"numeric",month:"short",year:"numeric"}).format(new Date(day.value+"T12:00:00"));
     const v=++version;
     const rows=await result((await db()).from("food_entries").select("*").eq("entry_date",day.value).order("created_at"));
     if(v!==version)return;entries=rows;
@@ -42,5 +43,11 @@ export async function mount(root) {
   const change=n=>{const d=new Date(day.value+"T12:00:00");d.setDate(d.getDate()+n);day.value=localDate(d);reload().catch(e=>toast(e.message));};
   root.querySelector("#previous-day").onclick=()=>change(-1);root.querySelector("#next-day").onclick=()=>change(1);
   root.querySelector("#today").onclick=()=>{day.value=localDate();reload().catch(e=>toast(e.message));};
+  root.querySelector("#selected-day").onclick=()=>{
+    const [y,m,d]=day.value.split("-");
+    dialog('<h2>Tag auswählen</h2><form class="stack"><div class="birth-fields"><label>Tag<input name="d" inputmode="numeric" maxlength="2" value="'+d+'" required></label><label>Monat<input name="m" inputmode="numeric" maxlength="2" value="'+m+'" required></label><label>Jahr<input name="y" inputmode="numeric" maxlength="4" value="'+y+'" required></label></div><p id="date-error" role="alert"></p><button class="btn" type="submit">Anzeigen</button></form>',el=>{
+      const f=el.querySelector("form");f.onsubmit=e=>{e.preventDefault();const selected=dateFromParts(f.d.value,f.m.value,f.y.value);if(!selected){el.querySelector("#date-error").textContent="Bitte ein gültiges Datum eingeben.";return;}day.value=selected;closeDialog();reload().catch(e=>toast(e.message));};
+    });
+  };
   day.onchange=()=>{if(day.value)reload().catch(e=>toast(e.message));};await reload();
 }

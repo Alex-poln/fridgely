@@ -1,6 +1,9 @@
+import { profileEditor, nutritionSettings } from "../goals/profile.js";
 import { configured, db, user } from "../../core/supabase.js";
 import { esc, icon, busy, toast } from "../../core/ui.js";
 export async function mount(root) {
+  root.querySelector("#edit-body-profile").onclick=()=>profileEditor().catch(e=>toast(e.message));
+  root.querySelector("#nutrition-settings").onclick=()=>nutritionSettings().catch(e=>toast(e.message));
   root.querySelector("#restart-tour").onclick = () => window.dispatchEvent(new Event("nussi-tour"));
   const u = await user();
   root.querySelector("#status").innerHTML =
@@ -34,3 +37,4 @@ export async function mount(root) {
     };
   }
 }
+

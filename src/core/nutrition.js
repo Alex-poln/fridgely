@@ -38,3 +38,15 @@ export function recipeNutrition(recipe, products) {
 export function dailyTotals(entries) {
   return Object.fromEntries(nutrients.map(k => [k, { value: entries.reduce((sum,e) => sum + Number(e[k] ?? 0),0), incomplete: entries.some(e => e[k] == null) }]));
 }
+
+export function defaultProtein(goal, age) { return goal === "muscle" ? 1.6 : age >= 65 ? 1 : 0.8; }
+export function macroTargets(kcal, protein) {
+ if (!(kcal>0) || !(protein>0) || !Number.isFinite(kcal+protein)) return null;
+ const fat=Math.round(kcal*0.30/9), carbs=Math.round((kcal-protein*4-fat*9)/4);
+ return carbs>=0 ? {kcal,protein:Math.round(protein),fat,carbs} : null;
+}
+export function dateFromParts(day,month,year) {
+ if (![day,month,year].every(v=>/^[0-9]+$/.test(String(v)))) return null;
+ const d=Number(day),m=Number(month),y=Number(year),date=new Date(y,m-1,d,12);
+ return y>=1900 && y<=2100 && date.getFullYear()===y && date.getMonth()===m-1 && date.getDate()===d ? localDate(date) : null;
+}
