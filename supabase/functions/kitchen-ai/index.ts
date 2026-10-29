@@ -7,8 +7,7 @@ const recipeSchema = {
   properties: {
     recipes: {
       type: "array",
-      minItems: 1,
-      maxItems: 3,
+      // Array limits are enforced by validateRecipes, not Gemini schema expansion.
       items: {
         type: "object",
         properties: {
@@ -247,16 +246,24 @@ Deno.serve(async (req) => {
         }),
       },
     );
-    if (!response.ok)
+    if (!response.ok) {
+      // Status is sufficient for the client; never return provider payloads or secrets.
       return respond(
         {
           error:
             response.status === 429
               ? "KI-Kontingent momentan ausgeschöpft. Bitte später versuchen."
-              : "Der KI-Anbieter konnte die Anfrage nicht verarbeiten. Prüfe das konfigurierte Modell und den API-Key.",
+              : response.status === 400
+                ? "Der KI-Anbieter hat das Anfrageformat abgelehnt (400). Bitte die aktuelle kitchen-ai Edge Function bereitstellen."
+                : [401,403].includes(response.status)
+                  ? "Der KI-Anbieter verweigert den Zugriff. Bitte Schlüsselberechtigungen prüfen."
+                  : response.status === 404
+                    ? "Das konfigurierte KI-Modell wurde nicht gefunden."
+                    : "Der KI-Anbieter ist momentan nicht erreichbar. Bitte später versuchen.",
         },
         response.status === 429 ? 429 : 502,
       );
+    }
     const generated = await response.json();
     const candidate = generated.candidates?.[0];
     if (candidate?.finishReason !== "STOP")
@@ -304,3 +311,4 @@ Deno.serve(async (req) => {
     );
   }
 });
+

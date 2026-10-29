@@ -6,15 +6,29 @@ export function nussi(text, state = "idle") {
   const art = nussiArt.replace(/id="([^"]+)"/g, (_, id) => `id="${prefix}${id}"`).replace(/url\(#([^)]+)\)/g, (_, id) => `url(#${prefix}${id})`);
   return `<div class="nussi nussi-${state}"><div class="nussi-character">${art}</div><div class="nussi-bubble"><strong>Nussi</strong><span class="nussi-words">${esc(text)}</span>${state === "thinking" ? '<span class="nussi-dots" aria-hidden="true"><i></i><i></i><i></i></span>' : ""}</div></div>`;
 }
-export function thinking(host, task) {
-  host.hidden = false;
-  host.setAttribute("role", "status"); host.setAttribute("aria-live", "polite");
-  host.innerHTML = nussi(task, "thinking");
-  const timer = setTimeout(() => {
-    const words = host.querySelector(".nussi-words");
-    if (words) words.textContent = "Ich bin noch dran. Das kann einen kleinen Moment dauern.";
-  }, 16000);
-  return () => { clearTimeout(timer); host.hidden = true; host.replaceChildren(); };
+let thinkingOverlay, thinkingTimer;
+const thinkingTasks=new Set();
+export function thinking(host,task="Ich denke kurz nach …") {
+ if(host) {host.hidden=true;host.replaceChildren();}
+ const token=Symbol();thinkingTasks.add(token);
+ if(!thinkingOverlay){
+  thinkingOverlay=document.createElement("dialog");
+  thinkingOverlay.className="ai-thinking-overlay";
+  thinkingOverlay.setAttribute("aria-label","Nussi arbeitet");
+  thinkingOverlay.innerHTML='<div role="status" aria-live="polite">'+nussi(task,"thinking")+'</div>';
+  thinkingOverlay.addEventListener("cancel",e=>e.preventDefault());
+  document.body.append(thinkingOverlay);thinkingOverlay.showModal();
+  thinkingTimer=setTimeout(()=>{
+   const words=thinkingOverlay?.querySelector(".nussi-words");
+   if(words)words.textContent="Ich bin noch dran. Das kann einen kleinen Moment dauern.";
+  },16000);
+ }
+ let stopped=false;
+ return ()=>{
+  if(stopped)return;stopped=true;thinkingTasks.delete(token);
+  if(thinkingTasks.size)return;
+  clearTimeout(thinkingTimer);thinkingOverlay?.close();thinkingOverlay?.remove();thinkingOverlay=null;
+ };
 }
 export function bindNussiPassword(container, password, toggle) {
   const mascot = container.querySelector(".nussi");
@@ -40,3 +54,4 @@ export function bindNussiPassword(container, password, toggle) {
     mascot.querySelector('[data-part="pupils"]').style.transform = `translate(${x}px,${y}px)`;
   });
 }
+

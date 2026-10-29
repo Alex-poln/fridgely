@@ -125,7 +125,7 @@ export async function mount(root) {
             ? "Versuche einen anderen Suchbegriff."
             : "Erstelle dein erstes Produkt. Korrigierte Nährwerte werden hier für dich gespeichert.",
         );
-    grid.querySelectorAll("[data-eaten]").forEach(b => b.onclick=()=>logFood({product:products.find(p=>p.id===b.dataset.eaten)}));
+    grid.querySelectorAll("[data-eaten]").forEach(b => b.onclick=()=>logFood({product:products.find(p=>p.id===b.dataset.eaten),after:reload}));
     grid.querySelectorAll("[data-edit]").forEach(
       (b) =>
         (b.onclick = () =>
@@ -184,3 +184,4 @@ export async function mount(root) {
     productEditor({}, reload).catch((e) => toast(e.message));
   await render();
 }
+

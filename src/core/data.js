@@ -1,3 +1,4 @@
+import { thinking } from "./nussi.js";
 import { db, result, requireUser, configured, user } from "./supabase.js";
 export async function list(table) {
   if (!configured || !(await user())) return [];
@@ -32,6 +33,8 @@ export async function rpc(name, args) {
 }
 export async function ai(mode, payload = {}) {
   await requireUser();
+  const stop=thinking(null,mode==="receipt"?"Ich lese deinen Bon …":mode==="nutrition"?"Ich schätze die Nährwerte …":"Ich sammle passende Rezeptideen …");
+  try {
   const { data, error } = await (
     await db()
   ).functions.invoke("kitchen-ai", { body: { mode, ...payload } });
@@ -44,8 +47,10 @@ export async function ai(mode, payload = {}) {
     } catch {}
     throw Error(message);
   }
+  if (!data) throw Error("Keine KI-Antwort erhalten. Bitte erneut versuchen.");
   if (data.error) throw Error(data.error);
   return data;
+  } finally {stop();}
 }
 export async function uploadImage(file) {
   const u = await requireUser();

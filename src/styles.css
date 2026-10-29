@@ -1311,3 +1311,16 @@ input,select,textarea {max-width:100%;}
  .section-title #collection-new-meal {width:100%; margin-left:0;}
  #new-meal {width:100%;}
 }
+
+
+dialog.ai-thinking-overlay {
+ position:fixed; inset:0; margin:0; width:100vw; height:100dvh;
+ max-width:none; max-height:none; border:0; border-radius:0;
+ background:#f6f8f5; color:#203831; padding:24px; box-sizing:border-box;
+ overflow:auto;
+}
+dialog.ai-thinking-overlay[open] {display:flex;align-items:center;justify-content:center;}
+dialog.ai-thinking-overlay::backdrop {background:#f6f8f5;}
+.ai-thinking-overlay .nussi {margin:0 auto;max-width:560px;justify-content:center;}
+#entry-wizard .check input {width:auto;flex:none;}
+@media(max-width:600px){.ai-thinking-overlay .nussi{flex-direction:column;text-align:center;}.ai-thinking-overlay .nussi-bubble:before{display:none;}}
