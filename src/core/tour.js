@@ -1,4 +1,5 @@
 import { nussi } from "./nussi.js";
+import { visibleTarget, panelPlacement } from "./tour-layout.js";
 const navigationSteps = [
   ["fridge", "Dein Kühlschrank", "Hier siehst du deine Lebensmittel, Mengen und Haltbarkeit. Mit einem Bonfoto füllen wir deinen Vorrat gemeinsam auf."],
   ["kitchen", "Kochen mit Nussi", "Ich schlage dir Rezepte aus deinem Vorrat vor. Oder du sagst mir, was du gerne kochen möchtest."],
@@ -23,23 +24,32 @@ export function startTour(userId, force = false) {
     ["#empty-scan, #scan-receipt", "Kassenbon scannen", "Fotografiere deinen Bon. Prüfe die erkannten Lebensmittel und übernimm sie in deinen Vorrat."],
     ["#empty-add, #add", "Einzeln hinzufügen", "Hier trägst du Lebensmittel mit Menge und Datum selbst ein."],
     ...navigationSteps.map(([page, title, text]) => ['#navigation [data-page="' + page + '"]', title, text])
-  ].filter(([selector]) => document.querySelector(selector));
+  ].filter(([selector]) => visibleTarget(document, selector));
   const soon = document.querySelector('[data-filter="soon"]');
   if (soon && soon.getClientRects().length) steps.splice(2, 0, ['[data-filter="soon"]', "Bald fällig", "Hier findest du Lebensmittel, deren Datum heute oder in den nächsten drei Tagen erreicht ist. Tippe den Filter an, um sie zu sehen."]);
+  if (!steps.length) { overlay.remove(); active = null; return; }
   let index = 0;
   function finish() { seen.add(userId); try { localStorage.setItem(key(userId), "done"); } catch {} overlay.close(); }
   function position() {
-    const target = document.querySelector(steps[index][0]);
+    const target = visibleTarget(document, steps[index][0]);
     if (!target) { overlay.close(); return; }
     const bounds = target.getBoundingClientRect(), highlight = overlay.querySelector(".tour-highlight"), panel = overlay.querySelector(".tour-panel");
-    highlight.innerHTML = target.innerHTML;
-    Object.assign(highlight.style, { left: `${bounds.left}px`, top: `${bounds.top}px`, width: `${bounds.width}px`, height: `${bounds.height}px` });
-    const width = Math.min(390, innerWidth - 28);
-    panel.style.width = `${width}px`;
-    const top = innerWidth <= 720 ? (bounds.top > innerHeight / 2 ? bounds.top - panel.offsetHeight - 18 : bounds.bottom + 18) : Math.max(20, Math.min(bounds.top - 30, innerHeight - panel.offsetHeight - 20));
-    panel.style.left = `${innerWidth <= 720 ? (innerWidth - width) / 2 : Math.min(bounds.right + 24, innerWidth - width - 14)}px`;
-    panel.style.top = `${Math.max(12, top)}px`;
-    panel.style.maxHeight = `${Math.max(180, (innerWidth <= 720 ? innerHeight - Math.max(12, top) - 100 : innerHeight - 40))}px`;
+    // Copy the real control, preserving its layout; never measure hidden alternatives.
+    const copy = target.cloneNode(true);
+    copy.removeAttribute("id");
+    copy.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
+    copy.setAttribute("tabindex", "-1");
+    copy.style.cssText = "margin:0;width:100%;height:100%;box-sizing:border-box;pointer-events:none";
+    highlight.replaceChildren(copy);
+    Object.assign(highlight.style, { left: bounds.left + "px", top: bounds.top + "px", width: bounds.width + "px", height: bounds.height + "px", padding: "0", display: "block", boxSizing: "border-box" });
+    const vv = window.visualViewport;
+    const viewport = { left: vv?.offsetLeft || 0, top: vv?.offsetTop || 0, width: vv?.width || innerWidth, height: vv?.height || innerHeight };
+    panel.style.boxSizing = "border-box";
+    panel.style.width = Math.min(390, viewport.width - 28) + "px";
+    panel.style.maxHeight = viewport.height - 28 + "px";
+    const layout = panelPlacement(bounds, { height: panel.scrollHeight }, viewport);
+    for (const [property, value] of Object.entries(layout)) panel.style[property] = value + "px";
+
   }
   function render() {
     overlay.querySelector("#tour-count").textContent = `DEINE KÜCHE ENTDECKEN · ${index + 1} / ${steps.length}`;
@@ -47,7 +57,7 @@ export function startTour(userId, force = false) {
     overlay.querySelector("#tour-mascot").innerHTML = nussi(steps[index][2]);
     overlay.querySelector("#tour-back").disabled = index === 0;
     overlay.querySelector("#tour-next").textContent = index === steps.length - 1 ? "Los geht’s" : "Weiter";
-    const target = document.querySelector(steps[index][0]);
+    const target = visibleTarget(document, steps[index][0]);
     target?.scrollIntoView({ block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
     position();
   }
@@ -55,8 +65,9 @@ export function startTour(userId, force = false) {
   overlay.querySelector("#tour-back").onclick = () => { if (index > 0) { index--; render(); } };
   overlay.querySelector("#tour-skip").onclick = finish;
   overlay.addEventListener("cancel", event => { event.preventDefault(); finish(); });
-  overlay.addEventListener("close", () => { window.removeEventListener("resize", position); window.removeEventListener("scroll", position, true); overlay.remove(); active = null; }, { once: true });
+  overlay.addEventListener("close", () => { window.visualViewport?.removeEventListener("resize", position); window.visualViewport?.removeEventListener("scroll", position); window.removeEventListener("resize", position); window.removeEventListener("scroll", position, true); overlay.remove(); active = null; }, { once: true });
+  window.visualViewport?.addEventListener("resize", position); window.visualViewport?.addEventListener("scroll", position);
   window.addEventListener("resize", position); window.addEventListener("scroll", position, true);
-  overlay.showModal(); render(); overlay.querySelector("#tour-next").focus();
+  overlay.showModal(); render(); overlay.querySelector("#tour-next").focus({ preventScroll: true });
 }
 
