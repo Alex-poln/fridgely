@@ -1,0 +1,40 @@
+export const nutrients = ["kcal", "protein", "carbs", "fat"];
+export const labels = { kcal: "Kalorien", protein: "Eiweiß", carbs: "Kohlenhydrate", fat: "Fett" };
+export const meals = { breakfast: "Frühstück", lunch: "Mittagessen", dinner: "Abendessen", snack: "Snacks" };
+export function localDate(d = new Date()) {
+  return [d.getFullYear(), String(d.getMonth()+1).padStart(2,"0"), String(d.getDate()).padStart(2,"0")].join("-");
+}
+export function ageOn(birth, today = localDate()) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(birth || "")) return null;
+  const [y,m,d] = birth.split("-").map(Number), [ty,tm,td] = today.split("-").map(Number);
+  return ty-y-(tm<m || (tm===m && td<d) ? 1 : 0);
+}
+export function estimateNeeds(p, today = localDate()) {
+  const age = ageOn(p.birth_date, today);
+  if (age === null || age < 18 || age > 100 || !["male","female"].includes(p.formula_sex)
+      || !(p.weight_kg >= 30 && p.weight_kg <= 300) || !(p.height_cm >= 120 && p.height_cm <= 230)
+      || !(p.activity_factor >= 1 && p.activity_factor <= 2.5)) return null;
+  const resting = 10 * p.weight_kg + 6.25 * p.height_cm - 5 * age + (p.formula_sex === "male" ? 5 : -161);
+  const factor = Number(p.protein_per_kg);
+  return { kcal: Math.round(resting * p.activity_factor), protein: factor >= .5 && factor <= 3 ? Math.round(p.weight_kg * factor) : null };
+}
+export function scaled(values, amount) {
+  if (!Number.isFinite(amount) || amount <= 0) throw Error("Bitte eine gültige Menge eingeben.");
+  return Object.fromEntries(nutrients.map(k => [k, values[k] == null ? null : Number(values[k]) * amount]));
+}
+export function productNutrition(product, amount) {
+  return scaled(product, amount / (product.unit === "Stück" ? 1 : 100));
+}
+export function recipeNutrition(recipe, products) {
+  if (recipe.nutrition_per_serving) return recipe.nutrition_per_serving;
+  const d = recipe.content;
+  if (!d.ingredients?.length || !(d.servings > 0)) return Object.fromEntries(nutrients.map(k => [k,null]));
+  const items = d.ingredients.map(i => {
+    const p = products.find(p => (p.id === i.product_id || (!i.product_id && p.name.toLocaleLowerCase("de") === i.name.toLocaleLowerCase("de"))) && p.unit === i.unit);
+    return p ? productNutrition(p, i.quantity) : {};
+  });
+  return Object.fromEntries(nutrients.map(k => [k, items.some(i => i[k] == null) ? null : items.reduce((sum,i) => sum + i[k],0) / d.servings]));
+}
+export function dailyTotals(entries) {
+  return Object.fromEntries(nutrients.map(k => [k, { value: entries.reduce((sum,e) => sum + Number(e[k] ?? 0),0), incomplete: entries.some(e => e[k] == null) }]));
+}

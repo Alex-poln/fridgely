@@ -1,3 +1,5 @@
+import { logFood } from "../tracker/entry.js";
+import { firstProfile } from "../goals/profile.js";
 import { list, save, remove, rpc, imageUrl } from "../../core/data.js";
 import { configured, requireUser } from "../../core/supabase.js";
 import {
@@ -62,7 +64,7 @@ export async function mount(root) {
           .map((s) => {
             const p = s.product;
             const exp = expiry(s.expires_on);
-            return `<article class="card"><div class="product-visual" data-image="${s.id}">${icon("nutrition")}</div><div class="card-top"><h3>${esc(p.name)}</h3><button class="icon-button" data-edit="${s.id}" aria-label="${esc(p.name)} ändern">${icon("edit")}</button></div><p>${esc(p.category)}</p><span class="badge ${exp.tone}">${icon("schedule")} ${esc(exp.label)}</span><div class="quantity"><strong>${fmt(s.quantity)} ${esc(s.unit)}</strong><div class="stepper"><button class="icon-button" data-adjust="${s.id}" data-sign="-1" aria-label="Menge von ${esc(p.name)} reduzieren">${icon("remove")}</button><button class="icon-button" data-adjust="${s.id}" data-sign="1" aria-label="Menge von ${esc(p.name)} erhöhen">${icon("add")}</button></div></div></article>`;
+            return `<article class="card"><div class="product-visual" data-image="${s.id}">${icon("nutrition")}</div><div class="card-top"><h3>${esc(p.name)}</h3><button class="icon-button" data-edit="${s.id}" aria-label="${esc(p.name)} ändern">${icon("edit")}</button></div><p>${esc(p.category)}</p><span class="badge ${exp.tone}">${icon("schedule")} ${esc(exp.label)}</span><div class="quantity"><strong>${fmt(s.quantity)} ${esc(s.unit)}</strong><div class="stepper"><button class="icon-button" data-adjust="${s.id}" data-sign="-1" aria-label="Menge von ${esc(p.name)} reduzieren">${icon("remove")}</button><button class="icon-button" data-adjust="${s.id}" data-sign="1" aria-label="Menge von ${esc(p.name)} erhöhen">${icon("add")}</button></div></div><button class="btn secondary" data-eaten="${s.id}">Gegessen</button></article>`;
           })
           .join("")
       : stock.length
@@ -72,6 +74,10 @@ export async function mount(root) {
     grid.querySelector("#empty-add")?.addEventListener("click", () => root.querySelector("#add").click());
     grid.querySelector("#reset-filter")?.addEventListener("click", () => { root.querySelector("#search").value = ""; root.querySelector('[data-filter="all"]').click(); });
     root.querySelector("#filter-help").hidden = filter !== "soon" || !stock.length;
+    grid.querySelectorAll("[data-eaten]").forEach(b => b.onclick = () => {
+      const lot=stock.find(s=>s.id===b.dataset.eaten);
+      logFood({product:products.find(p=>p.id===lot.product_id),lot,after:reload});
+    });
     grid
       .querySelectorAll("[data-edit]")
       .forEach(
@@ -194,5 +200,6 @@ export async function mount(root) {
       }),
   );
   await reload();
+  await firstProfile();
 }
 

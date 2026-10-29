@@ -2,7 +2,7 @@ import { icon, template } from "./core/ui.js";
 import { configured, db, user } from "./core/supabase.js";
 import { nussi } from "./core/nussi.js";
 import { startTour, stopTour } from "./core/tour.js";
-const pages = [["fridge", "kitchen", "Kühlschrank"], ["kitchen", "auto_awesome", "KI-Küche"], ["products", "inventory_2", "Produkte"], ["goals", "target", "Meine Ziele"], ["settings", "tune", "Einstellungen"]];
+const pages = [["fridge", "kitchen", "Kühlschrank"], ["kitchen", "auto_awesome", "KI-Küche"], ["tracker", "monitoring", "Tagebuch"], ["products", "inventory_2", "Produkte"], ["goals", "target", "Meine Ziele"], ["settings", "tune", "Einstellungen"]];
 const nav = document.querySelector("#navigation"), main = document.querySelector("#main");
 nav.innerHTML = pages.map(([id, symbol, label]) => `<a href="#${id}" data-page="${id}">${icon(symbol)}<span>${label}</span></a>`).join("");
 document.querySelector("#nussi-guide").innerHTML = nussi("Ein kleiner Vorrat. Viele gute Ideen.");
@@ -36,7 +36,7 @@ async function route() {
     cleanup = typeof dispose === "function" ? dispose : null;
     main.removeAttribute("aria-busy");
     document.title = `${!u ? "Willkommen bei Nussi" : pages.find(p => p[0] === page)?.[2] || "Dein Konto"} · Fridgely`;
-    if (u) startTour(u, false, page);
+    if (u) startTour(await user(), false, page);
   } catch (error) {
     if (seq !== sequence) return;
     currentUser = null; document.body.dataset.auth = "signed-out";

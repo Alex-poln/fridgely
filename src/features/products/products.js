@@ -1,3 +1,4 @@
+import { logFood } from "../tracker/entry.js";
 // Persönliche Stammdaten. Eine Korrektur gilt für alle künftigen Verwendungen.
 import {
   list,
@@ -114,7 +115,7 @@ export async function mount(root) {
       ? filtered
           .map(
             (p) =>
-              `<article class="card"><div class="product-visual" data-image="${p.id}">${icon("nutrition")}</div><div class="card-top"><h3>${esc(p.name)}</h3><button class="icon-button" data-edit="${p.id}" aria-label="${esc(p.name)} bearbeiten">${icon("edit")}</button></div><p>${esc(p.category)} · ${p.unit === "Stück" ? "pro Stück" : "pro 100 " + esc(p.unit)}</p><div class="recipe-summary"><span class="badge">${p.kcal == null ? "—" : fmt(p.kcal)} kcal</span><span class="badge">${p.protein == null ? "—" : fmt(p.protein)} g Eiweiß</span><span class="badge">${p.nutrition_source === "ai" ? "KI-Schätzung" : "Manuelle Werte"}</span></div><button class="text-link" data-delete="${p.id}">${icon("delete")} Produkt löschen</button></article>`,
+              `<article class="card"><div class="product-visual" data-image="${p.id}">${icon("nutrition")}</div><div class="card-top"><h3>${esc(p.name)}</h3><button class="icon-button" data-edit="${p.id}" aria-label="${esc(p.name)} bearbeiten">${icon("edit")}</button></div><p>${esc(p.category)} · ${p.unit === "Stück" ? "pro Stück" : "pro 100 " + esc(p.unit)}</p><div class="recipe-summary"><span class="badge">${p.kcal == null ? "—" : fmt(p.kcal)} kcal</span><span class="badge">${p.protein == null ? "—" : fmt(p.protein)} g Eiweiß</span><span class="badge">${p.nutrition_source === "ai" ? "KI-Schätzung" : "Manuelle Werte"}</span></div><button class="btn secondary" data-eaten="${p.id}">Gegessen</button><button class="text-link" data-delete="${p.id}">${icon("delete")} Produkt löschen</button></article>`,
           )
           .join("")
       : empty(
@@ -124,6 +125,7 @@ export async function mount(root) {
             ? "Versuche einen anderen Suchbegriff."
             : "Erstelle dein erstes Produkt. Korrigierte Nährwerte werden hier für dich gespeichert.",
         );
+    grid.querySelectorAll("[data-eaten]").forEach(b => b.onclick=()=>logFood({product:products.find(p=>p.id===b.dataset.eaten)}));
     grid.querySelectorAll("[data-edit]").forEach(
       (b) =>
         (b.onclick = () =>

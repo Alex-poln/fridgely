@@ -74,7 +74,7 @@ export function startTour(user, force = false, page = document.body.dataset.page
   function render() {
     overlay.querySelector("#tour-count").textContent = `DEINE KÜCHE ENTDECKEN · ${index + 1} / ${steps.length}`;
     overlay.querySelector("#tour-title").textContent = steps[index][1];
-    overlay.querySelector("#tour-mascot").innerHTML = nussi(steps[index][2]);
+    overlay.querySelector("#tour-mascot").innerHTML = nussi(index === 0 && page === "fridge" && user.user_metadata?.display_name ? "Hey " + user.user_metadata.display_name + "! " + steps[index][2] : steps[index][2]);
     overlay.querySelector("#tour-back").disabled = index === 0;
     overlay.querySelector("#tour-next").textContent = index === steps.length - 1 ? "Los geht’s" : "Weiter";
     const target = steps[index][0] ? visibleTarget(document, steps[index][0]) : null;

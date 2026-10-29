@@ -9,12 +9,13 @@ export const introductions = {
     [nav("products"), "Deine Produkte", "Hier verwaltest du wiederverwendbare Produkte und ihre Nährwerte."],
     [nav("goals"), "Deine Wünsche", "Hier legst du Ernährungsweise und Vorlieben für deine Rezeptideen fest."]
   ],
+  tracker: [[null, "Dein Ernährungstagebuch", "Hier siehst du deinen Tag. Über das Plus bei einer Mahlzeit trägst du Produkte, eigene Gerichte oder Rezepte ein. Den Tag kannst du oben wechseln."]],
   kitchen: [
     ['[data-mode="suggest"]', "Ideen aus deinem Vorrat", "Ich suche passende Rezeptideen zu deinen vorhandenen Zutaten."],
     ['[data-mode="wish"]', "Ein Wunschgericht", "Hier kannst du sagen, was du kochen möchtest. Ich zeige dir auch fehlende Zutaten."],
     ['[name="servings"]', "Für wie viele?", "Stelle die Anzahl der Portionen ein."],
     ['[name="consent"]', "Du entscheidest", "Bestätige, dass ich Vorrat und Ernährungswünsche für diese Anfrage an die KI senden darf."],
-    ['#recipe-form [type="submit"]', "Rezeptideen finden", "Hier startest du die Anfrage. Deine Rezepte findest du danach in der Rezeptsammlung."]
+    ['#recipe-form [type="submit"]', "Rezeptideen finden", "Hier startest du die Anfrage. Prüfe die Vorschläge im Fenster und speichere nur die Rezepte, die du behalten möchtest."]
   ],
   products: [
     ["#new-product", "Deine Produktbibliothek", "Lege ein Produkt einmal an. Du kannst es danach immer wieder deinem Vorrat hinzufügen."],

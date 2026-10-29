@@ -1,8 +1,16 @@
+import { profileEditor } from "./profile.js";
+import { esc, fmt } from "../../core/ui.js";
 import { list, save } from "../../core/data.js";
 import { configured } from "../../core/supabase.js";
 import { icon, toast, busy, setupNotice } from "../../core/ui.js";
 export async function mount(root) {
   root.querySelector("#notice").innerHTML = setupNotice(configured);
+  async function showProfile() {
+    const p=(await list("nutrition_profiles"))[0] || {};
+    root.querySelector("#profile-summary").innerHTML='<h2>'+esc(p.display_name || "Dein Profil")+'</h2><p>'+(p.kcal_target?fmt(p.kcal_target)+" kcal":"Kein Kalorienziel")+' · '+(p.protein_target_g?fmt(p.protein_target_g)+" g Eiweiß":"Kein Eiweißziel")+'</p>';
+  }
+  root.querySelector("#edit-profile").onclick=()=>profileEditor().then(showProfile).catch(e=>toast(e.message));
+  await showProfile();
   const current = (await list("goals"))[0] || {};
   const f = root.querySelector("form");
   const options = [

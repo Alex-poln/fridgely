@@ -1211,3 +1211,31 @@ body[data-page="fridge"] .product-visual { height:110px; }
  .tour-panel { max-width:calc(100vw - 28px); }
 }
 
+
+/* Nutrition journal: compact on phones, balanced on tablets. */
+.tracker-date { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
+.tracker-date label { flex:1; max-width:280px; }
+.tracker-summary { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-bottom:24px; }
+.tracker-summary .card { padding:20px; }
+.tracker-summary h2 { font-size:24px; margin:12px 0; }
+.tracker-summary h2 small { font-size:13px; }
+.tracker-summary progress { width:100%; height:8px; accent-color:var(--green); }
+.food-row { display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:1px solid var(--line); padding:10px 0; }
+.food-row .text-link { text-align:left; }
+.food-row small,.food-choice small { display:block; color:var(--muted); font-size:12px; margin-top:5px; }
+.food-choice { background:#f4f7f1; padding:16px; border:1px solid var(--line); border-radius:12px; text-align:left; color:var(--ink); }
+#food-options { margin-top:16px; max-height:45dvh; overflow:auto; }
+#manual-food { margin-top:16px; }
+.ingredient-editor { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr) 44px; gap:8px; align-items:end; }
+.profile-summary { margin-bottom:24px; }
+@media(min-width:1100px) { .tracker-summary {grid-template-columns:repeat(4,minmax(0,1fr));} }
+@media(max-width:720px) {
+ #navigation a {font-size:9px; padding-inline:1px;}
+ #navigation a .ui-icon {width:21px;height:21px;}
+ .tracker-summary {gap:8px;}
+ .tracker-summary .card {padding:14px;}
+ .tracker-summary h2 {font-size:20px;}
+ .tracker-date {gap:6px;}
+ body[data-page="fridge"] .page-heading .actions .btn {white-space:nowrap; font-size:12px;}
+ #modal {max-height:calc(100dvh - 28px); overflow:auto; width:calc(100vw - 24px); box-sizing:border-box;}
+}
