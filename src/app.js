@@ -36,7 +36,7 @@ async function route() {
     cleanup = typeof dispose === "function" ? dispose : null;
     main.removeAttribute("aria-busy");
     document.title = `${!u ? "Willkommen bei Nussi" : pages.find(p => p[0] === page)?.[2] || "Dein Konto"} · Fridgely`;
-    if (u && page === "fridge") startTour(u.id);
+    if (u) startTour(u, false, page);
   } catch (error) {
     if (seq !== sequence) return;
     currentUser = null; document.body.dataset.auth = "signed-out";
@@ -49,11 +49,12 @@ async function route() {
 function scheduleRoute() { clearTimeout(scheduled); scheduled = setTimeout(route, 0); }
 window.addEventListener("hashchange", scheduleRoute);
 window.addEventListener("auth-changed", () => { conceal(); scheduleRoute(); });
-window.addEventListener("nussi-tour", () => startTour(currentUser?.id, true));
-document.querySelector("#nussi-guide").onclick = () => startTour(currentUser?.id, true);
+window.addEventListener("nussi-tour", () => startTour(currentUser, true, "fridge"));
+document.querySelector("#nussi-guide").onclick = () => startTour(currentUser, true, "fridge");
 conceal(); route();
 if (configured) db().then(client => client.auth.onAuthStateChange((event) => {
   if (event === "SIGNED_OUT") { ++sequence; currentUser = null; conceal(); scheduleRoute(); }
   else if (event === "SIGNED_IN" && !currentUser) scheduleRoute();
   else if (event === "PASSWORD_RECOVERY") { location.hash = "settings"; scheduleRoute(); }
 })).catch(() => { /* route displays connection errors without exposing private views. */ });
+
