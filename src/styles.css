@@ -1187,3 +1187,27 @@ body:not([data-auth="signed-in"]) { background: #f7f8f3; }
 }
 /* Keep icon-font fallbacks inside their tiles while fonts are loading. */
 .stat-icon.material-symbols-rounded { overflow: hidden; }
+
+/* Quiet, task-first inventory across phone, tablet and desktop. */
+[hidden] { display: none !important; }
+body[data-page="fridge"] .page-heading { margin-bottom: 20px; }
+.stock-summary { color: var(--muted); margin: 0 0 20px; font-size: 14px; }
+.stock-empty { grid-column: 1 / -1; border: 1px dashed var(--line); background: transparent; padding: 48px 24px; }
+.stock-empty .actions { justify-content: center; margin-top: 24px; }
+.recipe-shortcut { display:flex; justify-content:space-between; align-items:center; padding:18px 20px; margin-top:24px; background:#eef3e9; color:var(--green); border-radius:14px; text-decoration:none; font-weight:600; }
+body[data-page="fridge"] .product-visual { height:110px; }
+@media(min-width:721px) and (max-width:1100px) { body[data-page="fridge"] .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:720px) {
+ body[data-page="fridge"] main { padding-top:18px; }
+ body[data-page="fridge"] h1 { font-size:27px; }
+ body[data-page="fridge"] .page-heading .actions { flex-wrap:nowrap; }
+ body[data-page="fridge"] .page-heading .actions .btn { flex:1; padding:12px 8px; font-size:12px; }
+ .stock-empty { padding:32px 18px; }
+ .stock-empty .actions { display:grid; }
+ .stock-empty h2 { font-size:22px; }
+ body[data-page="fridge"] .card { padding:16px; }
+ body[data-page="fridge"] .product-visual { height:80px; }
+ .tour-highlight { flex-direction:row; font-size:12px; padding:8px; }
+ .tour-panel { max-width:calc(100vw - 28px); }
+}
+

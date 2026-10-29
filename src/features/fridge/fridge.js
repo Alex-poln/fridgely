@@ -25,13 +25,17 @@ export async function mount(root) {
       list("inventory"),
       list("products"),
     ]);
-    const recipes = await list("recipes");
+    const recipes = [];
     root.querySelector("#total").textContent = stock.length;
     root.querySelector("#soon").textContent = stock.filter((s) => {
       const d = expiry(s.expires_on).days;
       return d !== null && d >= 0 && d <= 3;
     }).length;
     root.querySelector("#recipes-count").textContent = recipes.length;
+    root.querySelector(".toolbar").hidden = !stock.length;
+    root.querySelector(".stock-summary").hidden = !stock.length;
+    root.querySelector(".page-heading .actions").hidden = !stock.length;
+    root.querySelector("#recipe-shortcut").hidden = stock.length < 3;
     await render();
   }
   async function render() {
@@ -61,15 +65,13 @@ export async function mount(root) {
             return `<article class="card"><div class="product-visual" data-image="${s.id}">${icon("nutrition")}</div><div class="card-top"><h3>${esc(p.name)}</h3><button class="icon-button" data-edit="${s.id}" aria-label="${esc(p.name)} ändern">${icon("edit")}</button></div><p>${esc(p.category)}</p><span class="badge ${exp.tone}">${icon("schedule")} ${esc(exp.label)}</span><div class="quantity"><strong>${fmt(s.quantity)} ${esc(s.unit)}</strong><div class="stepper"><button class="icon-button" data-adjust="${s.id}" data-sign="-1" aria-label="Menge von ${esc(p.name)} reduzieren">${icon("remove")}</button><button class="icon-button" data-adjust="${s.id}" data-sign="1" aria-label="Menge von ${esc(p.name)} erhöhen">${icon("add")}</button></div></div></article>`;
           })
           .join("")
-      : empty(
-          "kitchen",
-          stock.length
-            ? "Hier ist gerade nichts."
-            : "Noch leer. Bald voller Möglichkeiten.",
-          stock.length
-            ? "Passe die Suche oder den Filter an."
-            : "Lege dein erstes Lebensmittel hinein und behalte Menge und Haltbarkeit im Blick.",
-        );
+      : stock.length
+        ? empty("search", "Keine passenden Lebensmittel", "Ändere deine Suche oder den Filter.") + '<button class="btn secondary" id="reset-filter">Alle anzeigen</button>'
+        : '<section class="empty-state stock-empty"><h2>Noch keine Lebensmittel</h2><p>Scanne einen Bon oder füge etwas selbst hinzu.</p><div class="actions"><button class="btn" id="empty-scan">Kassenbon scannen</button><button class="btn secondary" id="empty-add">Lebensmittel hinzufügen</button></div></section>';
+    grid.querySelector("#empty-scan")?.addEventListener("click", () => root.querySelector("#scan-receipt").click());
+    grid.querySelector("#empty-add")?.addEventListener("click", () => root.querySelector("#add").click());
+    grid.querySelector("#reset-filter")?.addEventListener("click", () => { root.querySelector("#search").value = ""; root.querySelector('[data-filter="all"]').click(); });
+    root.querySelector("#filter-help").hidden = filter !== "soon" || !stock.length;
     grid
       .querySelectorAll("[data-edit]")
       .forEach(
@@ -187,9 +189,10 @@ export async function mount(root) {
         filter = b.dataset.filter;
         root
           .querySelectorAll("[data-filter]")
-          .forEach((x) => x.classList.toggle("active", x === b));
+          .forEach((x) => { x.classList.toggle("active", x === b); x.setAttribute("aria-pressed", String(x === b)); });
         render();
       }),
   );
   await reload();
 }
+

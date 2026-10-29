@@ -1,8 +1,7 @@
 <div class="page-heading">
   <div>
-    <span class="eyebrow">DEIN VORRAT. ALLES IM BLICK.</span>
     <h1>Mein Kühlschrank</h1>
-    <p>Gut aufbewahrt. Rechtzeitig verbraucht. Lecker kombiniert.</p>
+    
   </div>
   <div class="actions">
   <button class="btn secondary" id="scan-receipt">
@@ -16,48 +15,9 @@
   </div>
 </div>
 <div id="notice"></div>
-<section class="hero">
-  <div>
-    <span class="eyebrow">DEIN VORRAT KANN MEHR</span>
-    <h2>Was ist drin?<br />Was wird draus?</h2>
-    <p>Entdecke Rezeptideen mit den Zutaten, die du schon zu Hause hast.</p>
-    <a href="#kitchen" class="btn light"
-      >Rezepte entdecken
-      <span class="material-symbols-rounded" aria-hidden="true"
-        >arrow_forward</span
-      ></a
-    >
-  </div>
-  <div class="hero-art" aria-hidden="true">
-    <span class="material-symbols-rounded">restaurant</span>
-  </div>
-</section>
-<section class="stats" aria-label="Vorratsübersicht">
-  <div class="stat">
-    <span class="stat-icon material-symbols-rounded" aria-hidden="true"
-      >kitchen</span
-    >
-    <div><strong id="total">0</strong><small>Im Kühlschrank</small></div>
-  </div>
-  <div class="stat">
-    <span class="stat-icon material-symbols-rounded" aria-hidden="true"
-      >schedule</span
-    >
-    <div><strong id="soon">0</strong><small>Bald verbrauchen</small></div>
-  </div>
-  <div class="stat">
-    <span class="stat-icon material-symbols-rounded" aria-hidden="true"
-      >menu_book</span
-    >
-    <div>
-      <strong id="recipes-count">0</strong><small>Gespeicherte Rezepte</small>
-    </div>
-  </div>
-</section>
-<div class="section-title">
-  <h2>Deine Lebensmittel</h2>
-  <small>Frische beginnt mit Überblick.</small>
-</div>
+
+<p class="stock-summary"><span id="total">0</span> Lebensmittel · <span id="soon">0</span> bald fällig<span id="recipes-count" hidden></span></p>
+
 <div class="toolbar">
   <label class="search"
     ><span class="material-symbols-rounded" aria-hidden="true">search</span
@@ -73,7 +33,5 @@
   </div>
 </div>
 <div id="stock" class="grid"></div>
-<p class="help">
-  „Bald fällig“ bedeutet heute bis in 3 Tagen. Ein Mindesthaltbarkeitsdatum ist
-  kein Verbrauchsdatum. Die KI verwendet vorsorglich keine abgelaufenen Chargen.
-</p>
+<p class="help" id="filter-help" hidden>Heute bis in 3 Tagen. Ein Mindesthaltbarkeitsdatum ist kein Verbrauchsdatum.</p><a class="recipe-shortcut" id="recipe-shortcut" href="#kitchen" hidden>Aus deinem Vorrat kochen <span aria-hidden="true">→</span></a>
+

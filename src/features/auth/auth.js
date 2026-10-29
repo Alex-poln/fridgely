@@ -12,14 +12,14 @@ export async function mount(root, currentUser) {
     });
     return;
   }
-  box.innerHTML = `<div class="login-layout"><section class="login-intro"><a class="login-brand" href="#auth" aria-label="Fridgely"><img src="./src/assets/brand/fridgely-logo.svg" alt="Fridgely" width="240" height="53"></a><span class="eyebrow">GUT FÜR DEINEN VORRAT. GUT FÜR DICH.</span><h1>Mehr Frische.<br>Weniger<br class="login-desktop-break"> verschwenden.</h1><p>Dein Einkauf, gut aufgehoben. Deine nächste Kochidee, schon in Reichweite.</p><div class="login-benefits"><span>Vorrat im Blick</span><span>Mit Nussi kochen</span></div><div class="login-intro-footer"><span class="login-leaf" aria-hidden="true"></span>Eine kleine Küche voller Möglichkeiten.</div></section>
+  box.innerHTML = `<div class="login-layout"><section class="login-intro"><a class="login-brand" href="#auth" aria-label="Fridgely"><img src="./src/assets/brand/fridgely-logo.svg" alt="Fridgely" width="240" height="53"></a><h1>Mehr Frische.<br>Weniger<br class="login-desktop-break"> verschwenden.</h1><div class="login-benefits"><span>Vorrat im Blick</span><span>Mit Nussi kochen</span></div></section>
     <section class="nussi-login-card">${nussi("Hallo! Melde dich an und lass uns deine Küche entdecken.")}<div class="login-card-content">${setupNotice(configured)}
     <div class="tabs" aria-label="Konto-Zugang"><button type="button" class="chip active" aria-pressed="true" data-mode="login">Anmelden</button><button type="button" class="chip" aria-pressed="false" data-mode="signup">Registrieren</button></div>
-    <h2 id="login-title">Willkommen zurück</h2><p class="help" id="login-copy">Dein persönlicher Vorrat wartet auf dich.</p>
+    <h2 id="login-title">Willkommen zurück</h2><p class="help" id="login-copy"></p>
     <form class="stack"><label>E-Mail-Adresse<input name="email" type="email" autocomplete="email" placeholder="du@beispiel.de" required maxlength="254"></label>
     <label>Passwort<span class="login-password"><input name="password" type="password" autocomplete="current-password" required maxlength="128"><button id="show-password" type="button" aria-pressed="false">Anzeigen</button></span></label>
     <p class="login-feedback" role="status" aria-live="polite" hidden></p><button class="btn" type="submit">Anmelden</button></form>
-    <button class="text-link" id="reset" type="button">Passwort vergessen?</button><p class="help login-note">Deine Küche ist nur nach der Anmeldung zugänglich.</p></div></section></div>`;
+    <button class="text-link" id="reset" type="button">Passwort vergessen?</button></div></section></div>`;
   let mode = "login", working = false;
   const form = box.querySelector("form"), feedback = box.querySelector(".login-feedback");
   const submit = form.querySelector('[type="submit"]');
@@ -37,7 +37,7 @@ export async function mount(root, currentUser) {
     form.password.autocomplete = mode === "login" ? "current-password" : "new-password";
     form.password.minLength = mode === "signup" ? 8 : 1;
     box.querySelector("#login-title").textContent = mode === "signup" ? "Deine Küche beginnt hier" : "Willkommen zurück";
-    box.querySelector("#login-copy").textContent = mode === "signup" ? "Wähle ein Passwort mit mindestens 8 Zeichen." : "Dein persönlicher Vorrat wartet auf dich.";
+    box.querySelector("#login-copy").textContent = mode === "signup" ? "Wähle ein Passwort mit mindestens 8 Zeichen." : "";
     box.querySelector("#reset").hidden = mode === "signup";
     lock(false);
   });
@@ -67,3 +67,4 @@ export async function mount(root, currentUser) {
     finally { lock(false); }
   };
 }
+
