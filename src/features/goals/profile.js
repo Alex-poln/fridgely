@@ -62,13 +62,16 @@ export async function profileEditor(onboarding=false) {
 export async function nutritionSettings(){
  const [profiles,goals]=await Promise.all([list("nutrition_profiles"),list("goals")]);
  const p=profiles[0]||{},factor=p.protein_per_kg??defaultProtein(goals[0]?.goal,ageOn(p.birth_date));
- dialog(`<h2>Ernährungsziele</h2><form class="stack"><label>Eiweiß pro kg Körpergewicht<input name="factor" type="number" min="0.5" max="3" step="0.1" value="${factor}" required></label><p class="help">Startwert: 1,6 bei Muskelaufbau, sonst 0,8 (ab 65 Jahren 1,0). Individuell anpassbar.</p>${fields.map(([k,l,u,max])=>`<label>${l} (${u})<input type="number" name="${k}" min="${k==="kcal_target"||k==="protein_target_g"?0.1:0}" max="${max}" step="0.1" value="${p[k]??""}"></label>`).join("")}<button type="button" class="btn secondary" id="calculate">Makros neu berechnen</button><p id="macro-feedback" class="help" role="status"></p><button class="btn" type="submit">Speichern</button></form>`,el=>{
-  const f=el.querySelector("form");el.querySelector("#calculate").onclick=()=>{
+ dialog(`<h2>Ernährungsziele</h2><form class="stack"><label>Eiweißziel<select name="protein_mode"><option value="auto" ${p.protein_per_kg==null?"selected":""}>Automatisch nach Ziel</option><option value="manual" ${p.protein_per_kg!=null?"selected":""}>Eigener Wert</option></select></label><label>Eiweiß pro kg Körpergewicht<input name="factor" type="number" min="0.5" max="3" step="0.1" value="${factor}" required></label><p class="help">Startwert: 1,6 bei Muskelaufbau, sonst 0,8 (ab 65 Jahren 1,0). Individuell anpassbar.</p>${fields.map(([k,l,u,max])=>`<label>${l} (${u})<input type="number" name="${k}" min="${k==="kcal_target"||k==="protein_target_g"?0.1:0}" max="${max}" step="0.1" value="${p[k]??""}"></label>`).join("")}<button type="button" class="btn secondary" id="calculate">Makros neu berechnen</button><p id="macro-feedback" class="help" role="status"></p><button class="btn" type="submit">Speichern</button></form>`,el=>{
+  const f=el.querySelector("form");
+  const syncMode=()=>{const automatic=f.protein_mode.value==="auto";f.factor.disabled=automatic;if(automatic)f.factor.value=defaultProtein(goals[0]?.goal,ageOn(p.birth_date));};syncMode();
+  f.protein_mode.onchange=()=>{syncMode();el.querySelector("#calculate").click();};
+  el.querySelector("#calculate").onclick=()=>{
    const t=macroTargets(Number(f.kcal_target.value),Number(p.weight_kg)*Number(f.factor.value));
    if(!t){el.querySelector("#macro-feedback").textContent="Bitte ein passendes Kalorienziel und ein Gewicht im Profil hinterlegen.";return;}
    f.protein_target_g.value=t.protein;f.carbs_target_g.value=t.carbs;f.fat_target_g.value=t.fat;el.querySelector("#macro-feedback").textContent="Vorschlag eingetragen. Speichern übernimmt die Werte.";
   };
-  f.onsubmit=e=>{e.preventDefault();busy(f.querySelector('[type="submit"]'),async()=>{await save("nutrition_profiles",{protein_per_kg:Number(f.factor.value),...Object.fromEntries(fields.map(([k])=>[k,f.elements[k].value===""?null:Number(f.elements[k].value)]))},p.id);closeDialog();toast("Ernährungsziele gespeichert.");});};
+  f.onsubmit=e=>{e.preventDefault();busy(f.querySelector('[type="submit"]'),async()=>{await save("nutrition_profiles",{protein_per_kg:f.protein_mode.value==="auto"?null:Number(f.factor.value),...Object.fromEntries(fields.map(([k])=>[k,f.elements[k].value===""?null:Number(f.elements[k].value)]))},p.id);closeDialog();toast("Ernährungsziele gespeichert.");});};
  });
 }
 export async function firstProfile(){const p=(await list("nutrition_profiles"))[0];if(!p?.onboarding_completed_at)await profileEditor(true);}

@@ -2,6 +2,7 @@ import { db, result } from "../../core/supabase.js";
 import { list, remove } from "../../core/data.js";
 import { esc, fmt, dialog, closeDialog, busy, toast } from "../../core/ui.js";
 import { nutrients, labels, meals, localDate, dateFromParts, dailyTotals, recipeNutrition } from "../../core/nutrition.js";
+import { customEditor } from "../kitchen/custom.js";
 import { logFood } from "./entry.js";
 export async function mount(root) {
   const day=root.querySelector("#entry-day");day.value=localDate();
@@ -31,11 +32,12 @@ export async function mount(root) {
   async function pick(mealType) {
     const [products,custom,recipes]=await Promise.all([list("products"),list("custom_meals"),list("recipes")]);
     const options=[...products.map(p=>({name:p.name,kind:"Produkt",args:{product:p}})),...custom.map(m=>({name:m.name,kind:"Eigenes Gericht",args:{meal:m}})),...recipes.filter(r=>r.is_saved!==false).map(r=>({name:r.content.title,kind:"Rezept",args:{recipe:r,nutrition:recipeNutrition(r,products)}}))];
-    dialog('<h2>Essen hinzufügen</h2><input id="food-search" type="search" placeholder="Produkt oder Gericht suchen" aria-label="Essen suchen"><button class="btn secondary" id="manual-food">Manuell eintragen</button><div class="stack" id="food-options"></div>',el=>{
+    dialog('<h2>Essen hinzufügen</h2><input id="food-search" type="search" placeholder="Produkt oder Gericht suchen" aria-label="Essen suchen"><button class="btn" id="create-dish">+ Eigenes Gericht erstellen</button><button class="btn secondary" id="manual-food">Manuell eintragen</button><div class="stack" id="food-options"></div>',el=>{
       const render=()=>{const q=el.querySelector("#food-search").value.toLocaleLowerCase("de");
         el.querySelector("#food-options").innerHTML=options.map((o,i)=>({...o,i})).filter(o=>o.name.toLocaleLowerCase("de").includes(q)).map(o=>`<button class="food-choice" data-choice="${o.i}">${esc(o.name)}<small>${o.kind}</small></button>`).join("") || '<p>Kein Treffer.</p>';
         el.querySelectorAll("[data-choice]").forEach(b=>b.onclick=()=>{closeDialog();logFood({...options[Number(b.dataset.choice)].args,date:day.value,mealType,after:reload});});
       };
+      el.querySelector("#create-dish").onclick=()=>{closeDialog();customEditor({},()=>pick(mealType)).catch(e=>toast(e.message));};
       el.querySelector("#food-search").oninput=render;
       el.querySelector("#manual-food").onclick=()=>{closeDialog();logFood({date:day.value,mealType,after:reload});};render();
     });

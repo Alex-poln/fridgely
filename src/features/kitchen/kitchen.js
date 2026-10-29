@@ -60,6 +60,7 @@ export async function mount(root) {
     finally{stopThinking?.();stopThinking=null;}
   });};
   root.querySelector("#recipe-search").oninput=render;
-  root.querySelector("#new-meal").onclick=()=>customEditor({},reload).catch(e=>toast(e.message));
+  root.querySelectorAll("#new-meal, #collection-new-meal").forEach(b=>b.onclick=()=>customEditor({},reload).catch(e=>toast(e.message)));
   await reload();return()=>stopThinking?.();
 }
+

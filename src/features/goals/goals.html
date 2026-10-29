@@ -5,12 +5,12 @@
     <p>Deine Vorlieben geben der KI-Küche die richtige Richtung.</p>
   </div>
 </div>
-<div id="notice"></div><section class="card profile-summary"><div id="profile-summary"></div><button class="btn secondary" id="edit-profile">Profil & Tagesziele</button></section>
+<div id="notice"></div><section class="card profile-summary"><div id="profile-summary" aria-live="polite"></div><button class="btn secondary" id="edit-profile">Profil & Tagesziele</button></section>
 <div class="two-col">
   <section class="card">
     <h2>Mein Ernährungsziel</h2>
     <form id="goals-form" class="stack">
-      <div class="stack" id="goal-options"></div>
+      <div class="stack" id="goal-options"></div><p class="help" id="goal-status" role="status">Antippen speichert dein Ziel und aktualisiert die Tageswerte direkt.</p>
       <label
         >Ernährungsweise<select name="diet">
           <option>Keine Einschränkung</option>
@@ -29,7 +29,7 @@
           maxlength="500"
           placeholder="Optional: Geschmack, Zeitaufwand oder Vorlieben"
         ></textarea></label
-      ><button class="btn" type="submit">Ziele speichern</button>
+      ><button class="btn" type="submit">Vorlieben speichern</button>
     </form>
   </section>
   <aside class="stack">
@@ -44,9 +44,10 @@
     <section class="card">
       <h3>Gut zu wissen</h3>
       <p>
-        Bedarfswerte sind Schätzungen, keine medizinischen Ernährungspläne. Du bestätigst deine Tagesziele selbst. KI-Nährwerte sind Schätzungen.
+        Bedarfswerte sind Schätzungen, keine medizinischen Ernährungspläne. Deine Zielauswahl passt die Tageswerte automatisch an. Eigene Eiweißwerte bleiben erhalten. KI-Nährwerte sind Schätzungen.
       </p>
       <p>Prüfe bei Allergien jedes Rezept und alle Produktetiketten selbst.</p>
     </section>
   </aside>
 </div>
+

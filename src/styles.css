@@ -1299,3 +1299,15 @@ input,select,textarea {max-width:100%;}
 .wizard-actions {display:flex; flex-wrap:wrap; gap:12px;}
 .wizard-actions .btn {flex:1; min-width:110px;}
 @media(max-width:380px){.nutrition-fields{grid-template-columns:1fr;}}
+
+
+/* Goals and recipe creation remain usable across compact and wide screens. */
+.profile-summary .wizard-targets {max-width:640px; margin-bottom:12px;}
+.profile-summary .goal-current {font-weight:600; color:var(--primary);}
+.section-title:has(#collection-new-meal) {display:flex; align-items:center; flex-wrap:wrap; gap:12px;}
+.section-title #collection-new-meal {margin-left:auto; white-space:normal;}
+#goal-status {min-height:1.5em;}
+@media(max-width:600px) {
+ .section-title #collection-new-meal {width:100%; margin-left:0;}
+ #new-meal {width:100%;}
+}

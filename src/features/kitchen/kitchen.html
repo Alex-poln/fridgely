@@ -1,4 +1,4 @@
-<div class="page-heading"><div><h1>Kochen mit Nussi</h1></div><button class="btn secondary" id="new-meal">Eigenes Gericht</button></div>
+<div class="page-heading"><div><h1>Kochen mit Nussi</h1></div><button class="btn" id="new-meal">+ Eigenes Gericht erstellen</button></div>
 <div id="notice"></div><div id="kitchen-nussi" class="nussi-welcome"></div><div id="kitchen-thinking" class="nussi-loading" hidden></div><p id="kitchen-error" class="notice" role="status" hidden></p>
 <section class="card"><div class="tabs"><button class="chip active" data-mode="suggest">Aus dem Vorrat</button><button class="chip" data-mode="wish">Wunschgericht</button></div>
 <form id="recipe-form" class="stack"><label id="wish-label" hidden>Was möchtest du kochen?<input name="wish" maxlength="300"></label>
@@ -6,6 +6,7 @@
 <label>Wunsch für diese Anfrage (optional)<input name="note" maxlength="300" placeholder="Zum Beispiel: besonders eiweißreich"></label>
 <label class="check"><input type="checkbox" name="consent" required><span>Vorrat, Ernährungswünsche und bestätigte Tagesziele für diese Anfrage an die KI senden.</span></label>
 <button class="btn" type="submit">Rezeptideen finden</button></form></section>
-<div class="section-title"><h2>Deine Rezeptsammlung</h2><small id="recipe-count"></small></div>
+<div class="section-title"><h2>Deine Rezeptsammlung</h2><small id="recipe-count"></small><button class="btn" id="collection-new-meal">+ Eigenes Gericht</button></div>
 <label class="search" style="max-width:none"><span class="material-symbols-rounded" aria-hidden="true">search</span><input id="recipe-search" type="search" placeholder="Rezepte und eigene Gerichte suchen" aria-label="Rezeptsammlung durchsuchen"></label>
 <div id="recipes" class="stack" style="margin-top:20px"></div>
+
