@@ -30,6 +30,12 @@ export const fmt = (n) =>
   );
 let timer;
 export function toast(message) {
+  const modal = document.querySelector("#modal[open]");
+  if (modal) {
+    let notice = modal.querySelector(".dialog-notice");
+    if (!notice) { notice=document.createElement("p"); notice.className="notice dialog-notice"; notice.setAttribute("role","alert"); modal.querySelector("#modal-body").prepend(notice); }
+    notice.textContent=message; notice.scrollIntoView({block:"nearest"}); return;
+  }
   const el = document.querySelector("#toast");
   el.textContent = message;
   el.hidden = false;

@@ -1286,3 +1286,16 @@ input,select,textarea {max-width:100%;}
  body {padding-top:env(safe-area-inset-top);}
 }
 
+
+/* Dialog fields must shrink inside Safari grid tracks. */
+#modal input, #modal select, #modal textarea {box-sizing:border-box; min-width:0; max-width:100%; width:100%;}
+#modal .wizard-choices input {width:auto;}
+#entry-wizard, #dish-wizard {width:100%; max-width:520px; margin-inline:auto;}
+.nutrition-fields {display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px;}
+.nutrition-fields label {min-width:0;}
+.dish-row {display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+.dish-row span {flex:1; min-width:120px;}
+.dialog-notice {position:relative; margin:0 52px 20px 0; overflow-wrap:anywhere;}
+.wizard-actions {display:flex; flex-wrap:wrap; gap:12px;}
+.wizard-actions .btn {flex:1; min-width:110px;}
+@media(max-width:380px){.nutrition-fields{grid-template-columns:1fr;}}

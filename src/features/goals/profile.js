@@ -1,13 +1,13 @@
 import { list, save } from "../../core/data.js";
 import { db } from "../../core/supabase.js";
 import { esc, dialog, closeDialog, busy, toast, fmt } from "../../core/ui.js";
-import { estimateNeeds, localDate, ageOn, defaultProtein, macroTargets, dateFromParts } from "../../core/nutrition.js";
+import { goalTargets, targetColumns, estimateNeeds, localDate, ageOn, defaultProtein, macroTargets, dateFromParts } from "../../core/nutrition.js";
 import { nussi } from "../../core/nussi.js";
 const fields=[["kcal_target","Kalorien","kcal",10000],["protein_target_g","Eiweiß","g",500],["carbs_target_g","Kohlenhydrate","g",1500],["fat_target_g","Fett","g",500]];
 export async function profileEditor(onboarding=false) {
  const [profiles,goals]=await Promise.all([list("nutrition_profiles"),list("goals")]);
- const p=profiles[0]||{},draft={...p};let step=0;
- const factor=()=>draft.protein_per_kg??defaultProtein(goals[0]?.goal,ageOn(draft.birth_date));
+ const p=profiles[0]||{},draft={...p,goal:goals[0]?.goal||"balanced"};let step=0;
+ const factor=()=>draft.protein_per_kg??defaultProtein(draft.goal,ageOn(draft.birth_date));
  const input=(name,label,min,max)=>`<label>${label}<input name="${name}" type="number" inputmode="decimal" min="${min}" max="${max}" step="0.1" value="${draft[name]??""}"></label>`;
  const choices=(name,options)=>'<div class="wizard-choices">'+options.map(([v,l])=>`<label><input type="radio" name="${name}" value="${v}" ${String(draft[name]??"")===String(v)?"checked":""}><span>${l}</span></label>`).join("")+'</div>';
  const questions=[
@@ -16,14 +16,17 @@ export async function profileEditor(onboarding=false) {
   ["Dein Geschlecht?",()=>choices("formula_sex",[["female","Weiblich"],["male","Männlich"],["","Keine Angabe"]])+'<p class="help">Die Schätzformel unterscheidet weiblich und männlich. Ohne Angabe kannst du Ziele selbst festlegen.</p>'],
   ["Wie groß bist du?",()=>input("height_cm","Größe in cm",50,250)],
   ["Wie viel wiegst du?",()=>input("weight_kg","Gewicht in kg",10,500)],
-  ["Wie aktiv ist dein Alltag?",()=>choices("activity_factor",[[1.2,"Wenig Bewegung"],[1.4,"Etwas Bewegung"],[1.6,"Aktiv / regelmäßiger Sport"],[1.8,"Sehr aktiv"],[2,"Körperlich anstrengender Alltag"]])]
+  ["Wie aktiv ist dein Alltag?",()=>choices("activity_factor",[[1.2,"Wenig Bewegung"],[1.4,"Etwas Bewegung"],[1.6,"Aktiv / regelmäßiger Sport"],[1.8,"Sehr aktiv"],[2,"Körperlich anstrengender Alltag"]])],
+  ["Was möchtest du erreichen?",()=>choices("goal",[["balanced","Gewicht halten"],["lose","Abnehmen"],["gain","Zunehmen"],["muscle","Muskeln aufbauen"]])]
  ];
  return new Promise(resolve=>dialog('<div id="profile-wizard"></div>',el=>{
   el.classList.add("profile-dialog");const box=el.querySelector("#profile-wizard");
-  const proposal=()=>{const estimate=estimateNeeds({...draft,protein_per_kg:factor()});return estimate&&macroTargets(Number(p.kcal_target)||estimate.kcal,Number(p.protein_target_g)||estimate.protein);};
+  const proposal=()=>goalTargets(draft,draft.goal);
   async function finish(useTargets) {
    const values={display_name:draft.display_name||"",birth_date:draft.birth_date||null,formula_sex:draft.formula_sex||null,height_cm:draft.height_cm??null,weight_kg:draft.weight_kg??null,activity_factor:draft.activity_factor??null,protein_per_kg:p.protein_per_kg??null,onboarding_completed_at:p.onboarding_completed_at||new Date().toISOString()};
    if(useTargets){const t=proposal();if(!t)throw Error("Für eine Berechnung fehlen gültige Angaben.");Object.assign(values,{kcal_target:t.kcal,protein_target_g:t.protein,carbs_target_g:t.carbs,fat_target_g:t.fat});}
+   await save("goals",{goal:draft.goal},goals[0]?.id);
+   if(draft.goal !== (goals[0]?.goal||"balanced")) Object.assign(values,targetColumns(proposal()));
    await save("nutrition_profiles",values,p.id);
    const {error}=await (await db()).auth.updateUser({data:{display_name:values.display_name}});
    if(error)toast("Profil gespeichert. Name wird beim nächsten Login aktualisiert.");
@@ -34,13 +37,14 @@ export async function profileEditor(onboarding=false) {
    if(step===0)draft.display_name=f.elements.display_name.value.trim();
    if(step===1){const {day,month,year}=f.elements;if(day.value||month.value||year.value){const date=dateFromParts(day.value,month.value,year.value);if(!date||date>localDate()){box.querySelector("#wizard-error").textContent="Bitte ein gültiges Geburtsdatum eingeben.";return false;}draft.birth_date=date;}else draft.birth_date=null;}
    if(step===2)draft.formula_sex=f.elements.formula_sex.value||null;
-   if(step>=3){const key=["height_cm","weight_kg","activity_factor"][step-3];draft[key]=f.elements[key].value?Number(f.elements[key].value):null;}
+   if(step>=3 && step<=5){const key=["height_cm","weight_kg","activity_factor"][step-3];draft[key]=f.elements[key].value?Number(f.elements[key].value):null;}
+   if(step===6)draft.goal=f.elements.goal.value;
    return true;
   }
   function render(){
    if(step===questions.length){
     const t=proposal();
-    box.innerHTML=`<p class="wizard-progress">Dein Überblick</p>${nussi("Alles klar"+(draft.display_name?", "+draft.display_name:"")+"!")}<h2>Deine Tagesziele</h2>${t?`<div class="wizard-targets">${[["kcal","Kalorien","kcal"],["protein","Eiweiß","g"],["carbs","Kohlenhydrate","g"],["fat","Fett","g"]].map(([k,l,u])=>`<div><small>${l}</small><strong>${fmt(t[k])} ${u}</strong></div>`).join("")}</div><p class="help">Eiweiß-Startwert: ${fmt(factor())} g/kg. Fett: 30 % der Kalorien. Kohlenhydrate: verbleibende Energie. Bestehende Kalorien- und Eiweißziele bleiben erhalten; Fett und Kohlenhydrate werden neu vorgeschlagen.</p>`:'<p>Für eine Schätzung fehlen Angaben oder dein Alter liegt außerhalb des vorgesehenen Bereichs. Du kannst dein Profil trotzdem speichern.</p>'}<details><summary>Zur Berechnung</summary><p class="help">Schätzung des Erhaltungsbedarfs für Erwachsene, kein automatisches Abnehmziel. Nicht für Schwangerschaft, Stillzeit oder medizinische Besonderheiten. Änderbar unter Einstellungen.</p><a href="https://pubmed.ncbi.nlm.nih.gov/2305711/">Kalorienformel</a> · <a href="https://www.dge.de/wissenschaft/referenzwerte/protein/">Eiweiß</a> · <a href="https://doi.org/10.2903/j.efsa.2010.1461">Fett</a></details><div class="wizard-actions"><button class="btn secondary" id="back">Zurück</button><button class="btn" id="save-profile">${t?"Ziele übernehmen":"Profil speichern"}</button></div>${t?'<button class="text-link" id="keep-targets">Nur Profil speichern</button>':""}`;
+    box.innerHTML=`<p class="wizard-progress">Dein Überblick</p>${nussi("Alles klar"+(draft.display_name?", "+draft.display_name:"")+"!")}<h2>Deine Tagesziele</h2>${t?`<div class="wizard-targets">${[["kcal","Kalorien","kcal"],["protein","Eiweiß","g"],["carbs","Kohlenhydrate","g"],["fat","Fett","g"]].map(([k,l,u])=>`<div><small>${l}</small><strong>${fmt(t[k])} ${u}</strong></div>`).join("")}</div><p class="help">Eiweiß-Startwert: ${fmt(factor())} g/kg. Fett: 30 % der Kalorien. Kohlenhydrate: verbleibende Energie. Alle Tagesziele werden passend zu deinem Ziel neu berechnet.</p>`:'<p>Für eine Schätzung fehlen Angaben oder dein Alter liegt außerhalb des vorgesehenen Bereichs. Du kannst dein Profil trotzdem speichern.</p>'}<details><summary>Zur Berechnung</summary><p class="help">Orientierungswerte für Erwachsene: Halten entspricht dem geschätzten Erhaltungsbedarf. Für Abnehmen schlagen wir 10 % weniger, für Zunehmen 10 % mehr und für Muskelaufbau 5 % mehr vor. Diese Startwerte sind individuell anpassbar. Nicht für Schwangerschaft, Stillzeit oder medizinische Besonderheiten. Änderbar unter Einstellungen.</p><a href="https://pubmed.ncbi.nlm.nih.gov/2305711/">Kalorienformel</a> · <a href="https://www.dge.de/wissenschaft/referenzwerte/protein/">Eiweiß</a> · <a href="https://doi.org/10.2903/j.efsa.2010.1461">Fett</a></details><div class="wizard-actions"><button class="btn secondary" id="back">Zurück</button><button class="btn" id="save-profile">${t?"Ziele übernehmen":"Profil speichern"}</button></div>${t?'<button class="text-link" id="keep-targets">Nur Profil speichern</button>':""}`;
     box.querySelector("#back").onclick=()=>{step--;render();};
     box.querySelector("#save-profile").onclick=e=>busy(e.currentTarget,()=>finish(Boolean(t)));
     box.querySelector("#keep-targets")?.addEventListener("click",e=>busy(e.currentTarget,()=>finish(false)));

@@ -1,3 +1,4 @@
+import { goalTargets, targetColumns } from "../../core/nutrition.js";
 import { profileEditor } from "./profile.js";
 import { esc, fmt } from "../../core/ui.js";
 import { list, save } from "../../core/data.js";
@@ -41,7 +42,13 @@ export async function mount(root) {
         },
         current.id,
       );
+      if(current.goal!==saved.goal){
+        const profile=(await list("nutrition_profiles"))[0];
+        if(profile) await save("nutrition_profiles",targetColumns(goalTargets(profile,saved.goal)),profile.id);
+      }
       current.id = saved.id;
+      current.goal = saved.goal;
+      await showProfile();
       toast(
         "Deine Ziele sind gespeichert. Neue KI-Rezepte berücksichtigen sie.",
       );

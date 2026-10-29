@@ -32,7 +32,7 @@ export async function mount(root) {
     root.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>dialog('<h2>Aus der Sammlung löschen?</h2><p>Tagebucheinträge und bereits erfolgte Vorratsabzüge bleiben erhalten.</p><button class="btn danger" id="confirm">Löschen</button>',el=>{el.querySelector("#confirm").onclick=e=>busy(e.currentTarget,async()=>{await remove(b.dataset.table,b.dataset.remove);closeDialog();await reload();});}));
     root.querySelectorAll("[data-cook]").forEach(b=>b.onclick=()=>{
       const r=recipes.find(r=>r.id===b.dataset.cook);
-      dialog(`<h2>Zutaten abziehen?</h2><p>Die Zutaten für alle ${fmt(r.content.servings)} Portionen werden aus deinem Vorrat genommen. Gegessene Portionen trägst du separat ein.</p><button class="btn" id="confirm">Kochen bestätigen</button>`,el=>{el.querySelector("#confirm").onclick=e=>busy(e.currentTarget,async()=>{await rpc("cook_recipe",{recipe_id:r.id});closeDialog();await reload();toast("Vorrat aktualisiert. Über „Gegessen“ kannst du deine Portion eintragen.");});});
+      dialog(`<h2>Zutaten abziehen?</h2><p>Vorhandene Zutaten für ${fmt(r.content.servings)} Portionen werden abgezogen, höchstens bis zur benötigten Menge. Fehlendes wird übersprungen. Bereits gebuchte Portionen zählen mit.</p><button class="btn" id="confirm">Kochen bestätigen</button>`,el=>{el.querySelector("#confirm").onclick=e=>busy(e.currentTarget,async()=>{await rpc("cook_recipe_available",{recipe_id:r.id});closeDialog();await reload();toast("Vorrat aktualisiert. Über „Gegessen“ kannst du deine Portion eintragen.");});});
     });
   }
   function preview(rows) {

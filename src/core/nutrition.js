@@ -50,3 +50,22 @@ export function dateFromParts(day,month,year) {
  const d=Number(day),m=Number(month),y=Number(year),date=new Date(y,m-1,d,12);
  return y>=1900 && y<=2100 && date.getFullYear()===y && date.getMonth()===m-1 && date.getDate()===d ? localDate(date) : null;
 }
+
+export function goalTargets(profile, goal = "balanced", today = localDate()) {
+ const factor=profile.protein_per_kg ?? defaultProtein(goal,ageOn(profile.birth_date,today));
+ const estimate=estimateNeeds({...profile,protein_per_kg:factor},today);
+ if(!estimate) return null;
+ const bmi=profile.weight_kg/((profile.height_cm/100)**2);
+ if(goal==="lose" && bmi<18.5) return null;
+ const multiplier={balanced:1,lose:.9,gain:1.1,muscle:1.05}[goal] ?? 1;
+ return macroTargets(Math.round(estimate.kcal*multiplier),estimate.protein);
+}
+export function targetColumns(t) {
+ return {kcal_target:t?.kcal??null,protein_target_g:t?.protein??null,carbs_target_g:t?.carbs??null,fat_target_g:t?.fat??null};
+}
+export function ingredientTotals(items, servings=1) {
+ if(!(servings>0)) throw Error("Bitte gültige Portionen eingeben.");
+ const values=items.map(i=>productNutrition({...i.nutrition,unit:i.unit},i.quantity));
+ // Each ingredient's reference unit must accompany its nutrition snapshot.
+ return Object.fromEntries(nutrients.map(k=>[k,!items.length||values.some(v=>v[k]==null)?null:values.reduce((sum,v)=>sum+v[k],0)/servings]));
+}

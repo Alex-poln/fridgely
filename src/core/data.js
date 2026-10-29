@@ -27,7 +27,8 @@ export async function remove(table, id) {
 }
 export async function rpc(name, args) {
   await requireUser();
-  return result((await db()).rpc(name, args));
+  try { return await result((await db()).rpc(name, args)); }
+  catch(e) { if (["cook_recipe_available","log_dish_consumption"].includes(name) && (e.code==="PGRST202" || /function.*(schema cache|does not exist)/i.test(e.message))) throw Error("Bitte zuerst das Supabase-Update 004_dish_consumption.sql ausführen. Es wurde noch nichts gebucht."); throw e; }
 }
 export async function ai(mode, payload = {}) {
   await requireUser();
@@ -67,3 +68,4 @@ export async function imageUrl(path) {
   );
   return data.signedUrl;
 }
+
